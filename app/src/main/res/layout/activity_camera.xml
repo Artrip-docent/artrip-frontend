@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CameraActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:contentDescription="Camera Preview"
+            android:layout_margin="20dp"/>
+
+        <Button
+            android:id="@+id/capture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Take Picture"
+            android:layout_gravity="center"
+            android:textSize="21sp"/>
+
+        <ImageView
+            android:id="@+id/captured_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:contentDescription="Captured Image"/>
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/speak_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:text="listen"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/material_dynamic_secondary80"/>
+    <!-- 하단 GridLayout으로 배치한 4개의 ImageButton -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:background="@color/gray">
+
+        <!-- 첫 번째 ImageButton -->
+        <ImageButton
+            android:id="@+id/Frame_Button"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:src="@drawable/whiteart"
+            android:background="@color/gray"
+            android:layout_margin="10dp"/>
+
+        <!-- 두 번째 ImageButton -->
+        <ImageButton
+            android:id="@+id/Camera_Button"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:src="@drawable/blackcamera"
+            android:background="@color/gray"
+            android:layout_margin="10dp"/>
+
+        <!-- 세 번째 ImageButton -->
+        <ImageButton
+            android:id="@+id/Commu_Button"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:src="@drawable/community"
+            android:background="@color/gray"
+            android:layout_margin="10dp"/>
+
+        <!-- 네 번째 ImageButton -->
+        <ImageButton
+            android:id="@+id/Mypage_Button"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:src="@drawable/whitemypage"
+            android:background="@color/gray"
+            android:layout_margin="10dp"/>
+    </GridLayout>
+</LinearLayout>

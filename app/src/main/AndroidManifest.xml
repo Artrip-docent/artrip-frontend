@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- 카메라 및 기타 권한 설정 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 인터넷 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 오디오 사용 권한 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Docent"
+        tools:targetApi="31">
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SpeakActivity"
+            android:exported="false" />
+        <activity
+            android:name=".communityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CameraActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".GoodexhibitiondetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GoodexhibitionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChathistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".exhibitionviewingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ArtRecommendationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PreferenceanalysisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReviewActivity"
+            android:exported="false" />
+
+        <!-- Main Activity 설정 (앱 실행 시 시작 화면) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Register 액티비티들 -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Register2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".Register3Activity"
+            android:exported="false" /> <!-- 추가 액티비티들 -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Keyword1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".MypageActivity"
+            android:exported="false" /> <!-- 외부 라이브러리 바코드 캡처 액티비티 설정 -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+    </application>
+
+</manifest>

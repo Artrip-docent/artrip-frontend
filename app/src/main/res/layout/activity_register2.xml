@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/main"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+
+        <ImageView
+            android:id="@+id/arrow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/arrow">
+        </ImageView>
+
+    </FrameLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비밀번호를 입력해주세요."
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:textSize="20dp"
+        android:textStyle="bold">
+    </TextView>
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비밀번호"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="60dp">
+    </TextView>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="13dp"
+        android:text="영문 대소문자, 숫자 포함 8~12자"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp">
+    </EditText>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비밀번호 확인"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp">
+    </TextView>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="13dp"
+        android:text="비밀번호를 한 번 더 입력해주세요."
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp">
+    </EditText>
+
+    <Button
+        android:id="@+id/next2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="다음"
+        android:backgroundTint="#000000"
+        android:layout_marginTop="300dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp">
+    </Button>
+</LinearLayout>
