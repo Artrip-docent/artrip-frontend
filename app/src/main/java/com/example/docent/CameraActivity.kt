@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.docent
 
 import android.Manifest
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -14,11 +15,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -26,29 +23,37 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LifecycleOwner
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.File
 import java.nio.ByteBuffer
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CameraActivity : AppCompatActivity() {
 
-    private var imageCapture: ImageCapture? = null  // ImageCapture 객체 초기화
-    private val CAMERA_PERMISSION_REQUEST_CODE = 1001  // 카메라 권한 요청 코드
-    private var capturedImage: Bitmap? = null  // 캡처된 이미지를 저장할 Bitmap 변수
-    private lateinit var capturedImageView: ImageView  // 캡처된 이미지를 표시할 ImageView
-    private lateinit var previewView: PreviewView  // 카메라 미리보기 PreviewView
+    private var imageCapture: ImageCapture? = null
+    private val CAMERA_PERMISSION_REQUEST_CODE = 1001
+    private var capturedImage: Bitmap? = null
+    private lateinit var capturedImageView: ImageView
+    private lateinit var previewView: PreviewView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_camera)
 
-        // 화면 인셋 설정
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // View 초기화
         previewView = findViewById(R.id.previewView)
         capturedImageView = findViewById(R.id.captured_image_view)
         val comuButton = findViewById<ImageButton>(R.id.Commu_Button)
@@ -56,39 +61,36 @@ class CameraActivity : AppCompatActivity() {
         val MypageButton = findViewById<ImageButton>(R.id.Mypage_Button)
         val listen = findViewById<Button>(R.id.speak_btn)
 
-        // 커뮤니티 화면으로 이동
         comuButton.setOnClickListener {
             val intent = Intent(this, communityActivity::class.java)
             startActivity(intent)
         }
 
-        // 작품추천화면으로 이동
         frameButton.setOnClickListener {
             val intent = Intent(this, ArtRecommendationActivity::class.java)
             startActivity(intent)
         }
 
-        // 마이페이지 이동
         MypageButton.setOnClickListener {
             val intent = Intent(this, MypageActivity::class.java)
             startActivity(intent)
         }
 
+        listen.setOnClickListener {
+            val intent = Intent(this, ChatActivity::class.java)
+            startActivity(intent)
+        }
 
-        // 카메라 권한 요청
         requestCameraPermission()
 
-        // 사진 촬영 버튼 클릭 리스너 설정
         findViewById<Button>(R.id.capture_button).setOnClickListener {
             takePhoto()
         }
-        listen.setOnClickListener{
-            var intent = Intent(this, ChatActivity::class.java)
-            startActivity(intent)
-        }
+
+        // Mock 데이터 호출 테스트
+        fetchMockData()
     }
 
-    // 카메라 권한 요청 및 처리 함수
     private fun requestCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
@@ -97,7 +99,6 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    // 권한 요청 결과 처리 함수
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -107,14 +108,13 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    // 카메라 시작 함수
+
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // 미리보기 설정
             val preview = Preview.Builder()
                 .build()
                 .also {
@@ -133,42 +133,86 @@ class CameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // 사진 촬영 함수
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        imageCapture.takePicture(ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageCapturedCallback() {
-            override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                // ByteBuffer를 Bitmap으로 변환하여 ImageView에 설정
-                val buffer: ByteBuffer = imageProxy.planes[0].buffer
-                val bytes = ByteArray(buffer.capacity())
-                buffer.get(bytes)
-                capturedImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        val photoFile = File.createTempFile(
+            "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}_",
+            ".jpg",
+            cacheDir
+        )
 
-                // Matrix 생성 및 회전 설정
-                val matrix = Matrix().apply {
-                    postRotate(90f)  // 90도 회전
-                }
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-                // 회전된 비트맵 생성
-                val rotatedBitmap = Bitmap.createBitmap(
-                    capturedImage!!,
-                    0, 0,
-                    capturedImage!!.width, capturedImage!!.height,
-                    matrix,
-                    true
-                )
-
-                // 회전된 이미지를 ImageView에 설정
-                capturedImageView.setImageBitmap(rotatedBitmap)
-
-                imageProxy.close()
-                //Toast.makeText(applicationContext, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show()
+        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
+                capturedImageView.setImageBitmap(BitmapFactory.decodeFile(photoFile.absolutePath))
+                Log.d("CameraActivity", "onImageSaved called")
+                uploadImageToServer(photoFile)
+                Toast.makeText(applicationContext, "사진 저장 완료: $savedUri", Toast.LENGTH_SHORT).show()
             }
 
             override fun onError(exception: ImageCaptureException) {
-                Log.e("MainActivity", "사진 캡처 실패: ${exception.message}", exception)
+                Log.e("CameraActivity", "사진 저장 실패: ${exception.message}", exception)
             }
         })
+    }
+
+    private fun uploadImageToServer(file: File) {
+        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+        val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+
+        val apiService = RetrofitClient.instance
+        apiService.uploadArtwork(body).enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    Log.d("CameraActivity", "Server Response: $data")
+
+                    // UI 업데이트 (예: 텍스트뷰에 데이터 표시)
+                    data?.let {
+                        val artworkName = it["artwork_name"]
+                        val artist = it["artist"]
+                        runOnUiThread {
+                            Toast.makeText(this@CameraActivity, "Artwork: $artworkName by $artist", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Log.e("CameraActivity", "Image Upload Failure: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                Log.e("CameraActivity", "Image Upload Error: ${t.message}")
+            }
+        })
+    }
+
+    private fun fetchMockData() {
+        val apiService = RetrofitClient.instance
+        apiService.getMockArtwork().enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    Log.d("CameraActivity", "Mock Data: $data")
+                } else {
+                    Log.e("CameraActivity", "Mock Data Error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                Log.e("CameraActivity", "Mock Data Failure: ${t.message}")
+            }
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(this))
     }
 }

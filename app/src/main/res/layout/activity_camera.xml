@@ -47,9 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:text="listen"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/material_dynamic_secondary80"/>
+        android:text="listen"/>
     <!-- 하단 GridLayout으로 배치한 4개의 ImageButton -->
     <GridLayout
         android:layout_width="match_parent"

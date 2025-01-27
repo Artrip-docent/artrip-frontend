@@ -11,7 +11,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
         android:layout_marginTop="40dp"
         android:gravity="center"
         android:text="관심 있는 그림을 골라주세요."
@@ -28,7 +27,7 @@
         android:id="@+id/artwork1"
         android:layout_width="159dp"
         android:layout_height="222dp"
-        android:layout_marginLeft="35dp"
+        android:layout_marginLeft="25dp"
         android:layout_marginTop="85dp"
         android:src="@drawable/vangoghart" />
 
@@ -49,7 +48,7 @@
         android:id="@+id/artwork3"
         android:layout_width="159dp"
         android:layout_height="222dp"
-        android:layout_marginLeft="35dp"
+        android:layout_marginLeft="21dp"
         android:layout_marginTop="10dp"
         android:src="@drawable/mantegnaart" />
 

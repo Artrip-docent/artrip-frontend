@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.docent
 
 data class listviewModel (
     var author : String = "",

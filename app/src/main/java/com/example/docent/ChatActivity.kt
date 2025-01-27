@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.docent
 
 import android.content.Intent
 import android.os.Build
@@ -11,6 +11,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import java.util.Locale
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
@@ -31,7 +35,9 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
             activityResult.launch(intent)
         }
+
     }
+
 
     private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()){
