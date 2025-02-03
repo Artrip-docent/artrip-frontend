@@ -164,30 +164,31 @@ class CameraActivity : AppCompatActivity() {
         val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
         val apiService = RetrofitClient.instance
-        apiService.uploadArtwork(body).enqueue(object : Callback<Map<String, String>> {
-            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+        apiService.uploadArtwork(body).enqueue(object : Callback<RetrofitClient.ArtworkResponse> {
+            override fun onResponse(
+                call: Call<RetrofitClient.ArtworkResponse>,
+                response: Response<RetrofitClient.ArtworkResponse>
+            ) {
                 if (response.isSuccessful) {
                     val data = response.body()
-                    Log.d("CameraActivity", "Server Response: $data")
-
-                    // UI 업데이트 (예: 텍스트뷰에 데이터 표시)
-                    data?.let {
-                        val artworkName = it["artwork_name"]
-                        val artist = it["artist"]
-                        runOnUiThread {
-                            Toast.makeText(this@CameraActivity, "Artwork: $artworkName by $artist", Toast.LENGTH_SHORT).show()
-                        }
+                    if (data != null) {
+                        Log.d("CameraActivity", "서버 응답 데이터: 제목=${data.title}, 작가=${data.artist}, 연도=${data.year}, 스타일=${data.style}, 설명=${data.description}")
+                        // UI 업데이트 (예: 텍스트뷰 업데이트)
+                        // exampleTextView.text = "작품 제목: ${data.title}\n작가: ${data.artist}"
+                    } else {
+                        Log.e("CameraActivity", "서버 응답 데이터가 비어 있습니다.")
                     }
                 } else {
-                    Log.e("CameraActivity", "Image Upload Failure: ${response.code()}")
+                    Log.e("CameraActivity", "응답 오류 코드: ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                Log.e("CameraActivity", "Image Upload Error: ${t.message}")
+            override fun onFailure(call: Call<RetrofitClient.ArtworkResponse>, t: Throwable) {
+                Log.e("CameraActivity", "서버 통신 실패: ${t.message}")
             }
         })
     }
+
 
     private fun fetchMockData() {
         val apiService = RetrofitClient.instance

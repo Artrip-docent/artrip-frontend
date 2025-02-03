@@ -15,9 +15,10 @@ interface ApiService {
     @POST("artworks/upload-artwork/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
         @Part image: MultipartBody.Part
-    ): Call<Map<String,String>> // Mock 데이터 (artwork_name과 artist)를 반환
+    ): Call<RetrofitClient.ArtworkResponse> // Mock 데이터 (artwork_name과 artist)를 반환
 
-
+    @POST("chatbot/send-message/") // Django 서버의 엔드포인트 (경로 확인 필수)
+    fun sendTextMessage(@Body message: String): Call<ChatResponse>
 
 
    @GET("artworks/analyze-image/") // Django 서버의 Mock 데이터 반환 엔드포인트

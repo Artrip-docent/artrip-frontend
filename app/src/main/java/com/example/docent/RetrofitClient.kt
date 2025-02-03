@@ -28,4 +28,12 @@ object RetrofitClient {
             .build()
             .create(ApiService::class.java)
     }
+
+    data class ArtworkResponse(
+        val title: String,
+        val artist: String,
+        val year: Int,
+        val style: String,
+        val description: String
+    )
 }

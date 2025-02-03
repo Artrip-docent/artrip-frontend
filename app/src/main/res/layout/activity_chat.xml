@@ -6,48 +6,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="8dp"
     tools:context=".ChatActivity">
 
-
-    <LinearLayout
+    <!-- 채팅 메시지를 표시할 RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/chat_user" />
 
-        <TextView
-            android:id="@+id/showText"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="tts구현, stt 구현"
-            android:textSize="40dp"/>
+    <!-- 사용자 입력창 (텍스트 입력 & 음성 입력) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <!-- 음성 입력 버튼 (STT) -->
+        <ImageButton
+            android:id="@+id/speech_btn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:contentDescription="음성 입력 버튼" />
+
+        <!-- 텍스트 입력창 -->
         <EditText
             android:id="@+id/speech_text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Enter text to speak" />
+            android:layout_weight="1"
+            android:hint="메시지를 입력하세요"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp" />
 
-        <Button
-            android:id="@+id/speech_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Speak"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/black"/>
-
+        <!-- 텍스트 전송 버튼 -->
         <Button
             android:id="@+id/send_text_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send to Server"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/black"/>
-
-
+            android:text="전송"
+            android:layout_marginLeft="8dp" />
     </LinearLayout>
-
 
 </LinearLayout>
