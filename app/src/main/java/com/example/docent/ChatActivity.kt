@@ -21,6 +21,7 @@ import retrofit2.Response
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import android.util.Log
+import com.google.gson.JsonObject
 
 
 class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -35,6 +36,10 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
     private val messages = mutableListOf<ChatMessage>()
+
+    private var sseThread: Thread? = null
+    private var lastUserMessage: String = "" // 마지막으로 보낸 메시지 저장
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +56,6 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
         chatRecyclerView.adapter = chatAdapter
 
-        listenToSSE()
 
         // 음성 입력 버튼 클릭 이벤트 //음성입력구현해야함
         speechBtn.setOnClickListener {
@@ -68,6 +72,50 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
+    private fun listenToSSE(userMessage: String) {
+        val jsonObject = JsonObject().apply {
+            addProperty("message", userMessage)
+        }
+
+        val call = RetrofitClient.instance.sendChatMessage(jsonObject)
+
+        sseThread = Thread {
+            try {
+                val response = call.execute()
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        val reader = BufferedReader(InputStreamReader(responseBody.byteStream()))
+                        var line: String?
+
+                        runOnUiThread {
+                            messages.add(ChatMessage("", false)) // 빈 메시지 추가 (Chunk별 업데이트)
+                            chatAdapter.notifyItemInserted(messages.size - 1)
+                        }
+
+                        val lastMessageIndex = messages.size - 1
+
+                        while (reader.readLine().also { line = it } != null) {
+                            if (!line.isNullOrBlank() && line!!.startsWith("data:")) {
+                                val chunkMessage = line!!.removePrefix("data:").trim()
+
+                                runOnUiThread {
+                                    messages[lastMessageIndex] = ChatMessage(messages[lastMessageIndex].text + chunkMessage, false)
+                                    chatAdapter.notifyItemChanged(lastMessageIndex)
+                                    chatRecyclerView.scrollToPosition(messages.size - 1)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Log.e("ChatActivity", "SSE 연결 실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("ChatActivity", "SSE 오류 발생: ${e.message}")
+            }
+        }
+
+        sseThread?.start()
+    }
 
 
 
@@ -77,25 +125,34 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         chatAdapter.notifyItemInserted(messages.size - 1)
         chatRecyclerView.scrollToPosition(messages.size - 1)
 
+        listenToSSE(message)
+
         val apiService = RetrofitClient.instance
-        val call = apiService.sendTextMessage(message)
+        val jsonObject = JsonObject().apply {
+            addProperty("message", message)
+        }
+        val call = apiService.sendChatMessage(jsonObject)
 
-        call.enqueue(object : Callback<ChatResponse> {
-            override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    val botResponse = response.body()?.response ?: "응답 없음"
-                    messages.add(ChatMessage(botResponse, false)) // 챗봇 응답 추가
-                    chatAdapter.notifyItemInserted(messages.size - 1)
-                    chatRecyclerView.scrollToPosition(messages.size - 1)
+                    response.body()?.let { responseBody ->
+                        val botResponse = responseBody.string()
+                        runOnUiThread {
+                            messages.add(ChatMessage(botResponse, false)) // 챗봇 응답 추가
+                            chatAdapter.notifyItemInserted(messages.size - 1)
+                            chatRecyclerView.scrollToPosition(messages.size - 1)
 
-                    // 챗봇 응답을 음성으로 출력
-                    speakText(botResponse)
+                            // 챗봇 응답을 음성으로 출력
+                            speakText(botResponse)
+                        }
+                    }
                 } else {
                     Toast.makeText(this@ChatActivity, "서버 오류 발생", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(this@ChatActivity, "네트워크 오류 발생", Toast.LENGTH_SHORT).show()
             }
         })
@@ -143,48 +200,13 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             }
         }
 
-
-
     override fun onDestroy() {
         if (this::textToSpeech.isInitialized) {
             textToSpeech.stop()
             textToSpeech.shutdown()
         }
-        super.onDestroy()
+        super.onDestroy()  //  마지막에 한 번만 호출
     }
-
-
-    private fun listenToSSE() {
-        val call = RetrofitClient.instance.streamChatResponse()
-
-        Thread {
-            try {
-                val response = call.execute() // 동기 요청
-                if (response.isSuccessful) {
-                    response.body()?.let { responseBody ->
-                        val reader = BufferedReader(InputStreamReader(responseBody.byteStream()))
-                        var line: String?
-
-                        while (reader.readLine().also { line = it } != null) {
-                            if (!line.isNullOrBlank() && line!!.startsWith("data:")) {
-                                val parsedMessage = line!!.removePrefix("data:").trim()
-
-                                runOnUiThread {
-                                    messages.add(ChatMessage(parsedMessage, false))
-                                    chatAdapter.notifyDataSetChanged()
-                                }
-                            }
-                        }
-
-                    }
-                } else {
-                    Log.e("ChatActivity", "SSE 연결 실패: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("ChatActivity", "SSE 오류 발생: ${e.message}")
-            }
-        }.start() // 별도의 쓰레드에서 실행
-    }
-
-
 }
+
+

@@ -16,12 +16,7 @@
         android:layout_weight="1"
         android:scrollbars="vertical"/>
 
-    <Button
-        android:id="@+id/test_btn"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:text="speak"
-        android:backgroundTint="@color/black"/>
+
 
     <!-- 하단 GridLayout으로 배치한 4개의 ImageButton -->
     <GridLayout

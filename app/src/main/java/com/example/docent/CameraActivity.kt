@@ -190,6 +190,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
+
     private fun fetchMockData() {
         val apiService = RetrofitClient.instance
         apiService.getMockArtwork().enqueue(object : Callback<Map<String, String>> {

@@ -110,16 +110,22 @@ class SpeakActivity : AppCompatActivity() {
         }
 
         override fun onResults(results: Bundle) {
-            // 인식된 문자열들의 리스트
             val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             matches?.let {
-                // 여러 결과가 나올 수 있으므로 줄바꿈(\n)으로 연결
-                binding.textView.text = it.joinToString("\n")
+                val speechResult = it[0] // 가장 정확한 인식 결과 선택
+                val intent = Intent().apply {
+                    putExtra("speech_result", speechResult)
+                }
+                setResult(RESULT_OK, intent)
+                finish() // 현재 액티비티 종료 후 ChatActivity로 돌아감
             }
         }
 
         override fun onPartialResults(partialResults: Bundle) {}
         override fun onEvent(eventType: Int, params: Bundle) {}
+
+
+
     }
 
     override fun onDestroy() {

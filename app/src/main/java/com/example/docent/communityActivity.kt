@@ -50,12 +50,6 @@ class communityActivity : AppCompatActivity(), ArtworkAdapter.OnItemClickListene
         val adapter = ArtworkAdapter(artworks, this)
         recyclerView.adapter = adapter
 
-        val speak_button = findViewById<Button>(R.id.test_btn)
-        speak_button.setOnClickListener{
-            val intent = Intent(this, SpeakActivity::class.java)
-            startActivity(intent)
-        }
-
 
         val cameraButton = findViewById<ImageButton>(R.id.Camera_Button)
         cameraButton.setOnClickListener {

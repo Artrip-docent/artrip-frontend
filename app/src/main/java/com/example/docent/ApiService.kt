@@ -18,14 +18,18 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Call<RetrofitClient.ArtworkResponse> // Mock 데이터 (artwork_name과 artist)를 반환
 
-    @POST("chatbot/send-message/") // Django 서버의 엔드포인트 (경로 확인 필수)
-    fun sendTextMessage(@Body message: String): Call<ChatResponse>
+
+        @Streaming
+        @POST("api/chat/") // SSE 지원하는 단일 API
+        fun sendChatMessage(@Body payload: JsonObject): Call<ResponseBody>
 
 
-   @GET("artworks/analyze-image/") // Django 서버의 Mock 데이터 반환 엔드포인트
-   fun getMockArtwork(): Call<Map<String, String>> // artwork_name과 artist를 반환
 
-    @Streaming
-    @GET("chatbot/stream-message/") // SSE 방식의 메시지 스트리밍 엔드포인트
-    fun streamChatResponse(): Call<ResponseBody>
+    @GET("artworks/analyze-image/") // Django 서버의 Mock 데이터 반환 엔드포인트
+    fun getMockArtwork(): Call<Map<String, String>> // artwork_name과 artist를 반환
+
+
+
+
+
 }
