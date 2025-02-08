@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Streaming
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -23,4 +24,8 @@ interface ApiService {
 
    @GET("artworks/analyze-image/") // Django 서버의 Mock 데이터 반환 엔드포인트
    fun getMockArtwork(): Call<Map<String, String>> // artwork_name과 artist를 반환
+
+    @Streaming
+    @GET("chatbot/stream-message/") // SSE 방식의 메시지 스트리밍 엔드포인트
+    fun streamChatResponse(): Call<ResponseBody>
 }

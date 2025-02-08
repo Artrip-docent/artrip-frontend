@@ -14,13 +14,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import android.util.Log
+
 
 class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var textToSpeech: TextToSpeech
+
 
     private lateinit var speechText: EditText
     private lateinit var sendTextBtn: Button
@@ -45,11 +51,12 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         chatRecyclerView.layoutManager = LinearLayoutManager(this)
         chatRecyclerView.adapter = chatAdapter
 
-        // 음성 입력 버튼 클릭 이벤트
+        listenToSSE()
+
+        // 음성 입력 버튼 클릭 이벤트 //음성입력구현해야함
         speechBtn.setOnClickListener {
-            val intent = Intent()
-            intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
-            activityResult.launch(intent)
+            val intent = Intent(this, SpeakActivity::class.java)
+            speechActivityResultLauncher.launch(intent)
         }
 
         // 메시지 전송 버튼 클릭 이벤트
@@ -60,6 +67,9 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             }
         }
     }
+
+
+
 
     // 사용자의 질문을 서버로 전송하는 함수
     private fun sendMessageToServer(message: String) {
@@ -119,12 +129,21 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     // TTS를 통해 챗봇 응답을 음성으로 출력하는 함수
     private fun speakText(text: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-        } else {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null)
-        }
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
     }
+
+    private val speechActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val speechResult = result.data?.getStringExtra("speech_result")
+                speechResult?.let {
+                    speechText.setText(it) // EditText에 표시
+                    sendMessageToServer(it) // 받아온 메시지를 바로 서버로 전송
+                }
+            }
+        }
+
+
 
     override fun onDestroy() {
         if (this::textToSpeech.isInitialized) {
@@ -133,4 +152,39 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         super.onDestroy()
     }
+
+
+    private fun listenToSSE() {
+        val call = RetrofitClient.instance.streamChatResponse()
+
+        Thread {
+            try {
+                val response = call.execute() // 동기 요청
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        val reader = BufferedReader(InputStreamReader(responseBody.byteStream()))
+                        var line: String?
+
+                        while (reader.readLine().also { line = it } != null) {
+                            if (!line.isNullOrBlank() && line!!.startsWith("data:")) {
+                                val parsedMessage = line!!.removePrefix("data:").trim()
+
+                                runOnUiThread {
+                                    messages.add(ChatMessage(parsedMessage, false))
+                                    chatAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+
+                    }
+                } else {
+                    Log.e("ChatActivity", "SSE 연결 실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("ChatActivity", "SSE 오류 발생: ${e.message}")
+            }
+        }.start() // 별도의 쓰레드에서 실행
+    }
+
+
 }
