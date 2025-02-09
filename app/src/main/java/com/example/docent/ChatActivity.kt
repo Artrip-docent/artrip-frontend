@@ -27,8 +27,8 @@ import com.google.gson.JsonObject
 class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var textToSpeech: TextToSpeech
-
-
+    private var isTTSInitialized = false  // TTS 초기화 완료 여부 플래그
+    private var ttsBuffer: String = ""
     private lateinit var speechText: EditText
     private lateinit var sendTextBtn: Button
     private lateinit var speechBtn: ImageButton
@@ -38,7 +38,6 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private val messages = mutableListOf<ChatMessage>()
 
     private var sseThread: Thread? = null
-    private var lastUserMessage: String = "" // 마지막으로 보낸 메시지 저장
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +59,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         chatRecyclerView.adapter = chatAdapter
 
 
-        // 음성 입력 버튼 클릭 이벤트 //음성입력구현해야함
+        // 음성 입력 버튼 클릭 이벤트
         speechBtn.setOnClickListener {
             val intent = Intent(this, SpeakActivity::class.java)
             speechActivityResultLauncher.launch(intent)
@@ -89,16 +88,42 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     response.body()?.let { responseBody ->
                         val reader = BufferedReader(InputStreamReader(responseBody.byteStream()))
                         var line: String?
-
                         while (reader.readLine().also { line = it } != null) {
                             if (!line.isNullOrBlank() && line!!.startsWith("data:")) {
                                 val chunkMessage = line!!.removePrefix("data: ")
 
                                 runOnUiThread {
-                                    // 4️⃣ 기존 AI 메시지 업데이트 (새 메시지를 추가하는 것이 아님)
-                                    messages[aiMessageIndex] = ChatMessage(messages[aiMessageIndex].text + chunkMessage, false)
+                                    // 기존 AI 메시지 업데이트 (새 청크를 추가)
+                                    val currentText = messages[aiMessageIndex].text
+                                    val newText = currentText + chunkMessage
+                                    messages[aiMessageIndex] = ChatMessage(newText, isUser = false)
                                     chatAdapter.notifyItemChanged(aiMessageIndex)
                                     chatRecyclerView.scrollToPosition(messages.size - 1)
+
+                                    // TTS 출력을 위해 버퍼에 청크 누적
+                                    ttsBuffer += chunkMessage
+
+                                    // 정규식으로 한 문장(마침표, 물음표, 느낌표로 끝나는)을 찾음
+                                    // [^.?!]+ : 마침표, 물음표, 느낌표가 아닌 문자들이 하나 이상
+                                    // [.?!]   : 문장이 끝나는 구분자
+                                    val sentenceRegex = Regex("([^.?!]+[.?!])")
+                                    val matches = sentenceRegex.findAll(ttsBuffer).toList()
+
+                                    if (matches.isNotEmpty()) {
+                                        // 마지막 완전한 문장의 끝 인덱스
+                                        val lastMatch = matches.last()
+                                        val endIndex = lastMatch.range.last + 1
+
+                                        // 완전한 문장들을 하나씩 TTS로 출력
+                                        for (match in matches) {
+                                            val sentence = match.value.trim()
+                                            if (sentence.isNotEmpty()) {
+                                                speakText(sentence)
+                                            }
+                                        }
+                                        // 버퍼에 남은 미완성 문장만 남김
+                                        ttsBuffer = ttsBuffer.substring(endIndex)
+                                    }
                                 }
                             }
                         }
@@ -131,36 +156,26 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         listenToSSE(message, aiMessageIndex)
     }
 
-    private val activityResult: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                textToSpeech = TextToSpeech(this, this, "com.google.android.tts")
-            } else {
-                val installIntent = Intent()
-                installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-                startActivity(installIntent)
-            }
-        }
-
-    // TTS 엔진 초기화
+    // TTS 엔진 초기화 콜백
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             val languageStatus = textToSpeech.setLanguage(Locale.KOREAN)
-
             if (languageStatus == TextToSpeech.LANG_MISSING_DATA ||
                 languageStatus == TextToSpeech.LANG_NOT_SUPPORTED
             ) {
                 Toast.makeText(this, "언어를 지원할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                isTTSInitialized = true  // TTS 초기화 성공
             }
         } else {
             Toast.makeText(this, "음성전환 엔진 에러입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // TTS를 통해 챗봇 응답을 음성으로 출력하는 함수
+    // TTS를 통해 텍스트를 음성으로 출력하는 함수
     private fun speakText(text: String) {
-        if (::textToSpeech.isInitialized) { // TTS가 초기화되었는지 확인
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        if (isTTSInitialized) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, null)
         } else {
             Log.e("ChatActivity", "TTS가 초기화되지 않았습니다!")
         }
