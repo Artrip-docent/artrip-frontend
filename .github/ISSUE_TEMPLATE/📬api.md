@@ -2,7 +2,7 @@
 name: "\U0001F4ECAPI"
 about: 서버와 API 연동합니다.
 title: "[api]"
-labels: API
+labels: ''
 assignees: ''
 
 ---
