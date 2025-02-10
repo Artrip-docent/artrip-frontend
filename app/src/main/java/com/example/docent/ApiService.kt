@@ -25,7 +25,7 @@ interface ApiService {
 
 
 
-    @GET("artworks/analyze-image/") // Django 서버의 Mock 데이터 반환 엔드포인트
+    @GET("artworks/analyze-image/") // Dj0ango 서버의 Mock 데이터 반환 엔드포인트
     fun getMockArtwork(): Call<Map<String, String>> // artwork_name과 artist를 반환
 
 

@@ -29,6 +29,7 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
         }
     }
 
+
     class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val chatTextView: TextView = itemView.findViewById(R.id.chat_text)
 

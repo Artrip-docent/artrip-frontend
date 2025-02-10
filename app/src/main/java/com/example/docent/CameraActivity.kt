@@ -175,6 +175,17 @@ class CameraActivity : AppCompatActivity() {
                         Log.d("CameraActivity", "서버 응답 데이터: 제목=${data.title}, 작가=${data.artist}, 연도=${data.year}, 스타일=${data.style}, 설명=${data.description}")
                         // UI 업데이트 (예: 텍스트뷰 업데이트)
                         // exampleTextView.text = "작품 제목: ${data.title}\n작가: ${data.artist}"
+
+                        // ChatActivity로 서버 응답 데이터 전달
+                        val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
+                            putExtra("description", data.description)
+                            putExtra("title", data.title)
+                            putExtra("artist", data.artist)
+                            putExtra("year", data.year.toString())
+                            putExtra("style", data.style)
+                        }
+                        startActivity(intent)
+                        finish()
                     } else {
                         Log.e("CameraActivity", "서버 응답 데이터가 비어 있습니다.")
                     }
