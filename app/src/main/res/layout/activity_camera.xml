@@ -28,7 +28,8 @@
             android:id="@+id/capture_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
             android:text="Take Picture"
             android:layout_gravity="center"
             android:textSize="21sp"/>
@@ -47,6 +48,8 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_gravity="center"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
         android:text="listen"/>
     <!-- 하단 GridLayout으로 배치한 4개의 ImageButton -->
     <GridLayout

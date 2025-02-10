@@ -6,9 +6,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://172.30.1.26:8000/" // Django 서버 주소
-
-
+    private const val BASE_URL = "http://127.0.0.1:8000/" // Django 서버 주소
+    //    private const val BASE_URL = "https://b869-218-154-254-94.ngrok-free.app/"
     private val client: OkHttpClient by lazy {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -22,7 +21,7 @@ object RetrofitClient {
 
     val instance: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("http://172.30.1.26:8000/")
+            .baseUrl("http://127.0.0.1:8000/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
