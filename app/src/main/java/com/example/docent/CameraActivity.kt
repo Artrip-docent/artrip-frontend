@@ -147,10 +147,14 @@ class CameraActivity : AppCompatActivity() {
         imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
-                capturedImageView.setImageBitmap(BitmapFactory.decodeFile(photoFile.absolutePath))
-                Log.d("CameraActivity", "onImageSaved called")
-                uploadImageToServer(photoFile)
-                Toast.makeText(applicationContext, "사진 저장 완료: $savedUri", Toast.LENGTH_SHORT).show()
+                Log.d("CameraActivity", "사진이 저장되었습니다: $savedUri")
+
+                // ChatActivity로 바로 이동
+                val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
+                    putExtra("imageUri", savedUri.toString())
+                }
+                startActivity(intent)
+                finish()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -158,6 +162,7 @@ class CameraActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun uploadImageToServer(file: File) {
         val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
