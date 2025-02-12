@@ -212,7 +212,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             if (result.resultCode == RESULT_OK) {
                 val speechResult = result.data?.getStringExtra("speech_result")
                 speechResult?.let {
-                    speechText.setText(it) // EditText에 표시
+                    //speechText.setText(it) // EditText에 표시
                     sendMessageToServer(it) // 받아온 메시지를 바로 서버로 전송
                 }
             }
