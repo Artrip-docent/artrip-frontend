@@ -2,8 +2,7 @@ package com.example.docent
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageButton
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -51,19 +50,19 @@ class communityActivity : AppCompatActivity(), ArtworkAdapter.OnItemClickListene
         recyclerView.adapter = adapter
 
 
-        val cameraButton = findViewById<ImageButton>(R.id.Camera_Button)
+        val cameraButton = findViewById<ImageView>(R.id.Camera_Button)
         cameraButton.setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
         // 작품추천화면으로 이동
-        val frameButton = findViewById<ImageButton>(R.id.Frame_Button)
+        val frameButton = findViewById<ImageView>(R.id.Frame_Button)
         frameButton.setOnClickListener {
             val intent = Intent(this, ArtRecommendationActivity::class.java)
             startActivity(intent)
         }
 
         // 마이페이지 이동
-        val MypageButton = findViewById<ImageButton>(R.id.Mypage_Button)
+        val MypageButton = findViewById<ImageView>(R.id.Mypage_Button)
         MypageButton.setOnClickListener {
             val intent = Intent(this, MypageActivity::class.java)
             startActivity(intent)

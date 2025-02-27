@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,12 +24,10 @@ import androidx.lifecycle.LifecycleOwner
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,7 +36,6 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private val CAMERA_PERMISSION_REQUEST_CODE = 1001
     private var capturedImage: Bitmap? = null
-    private lateinit var capturedImageView: ImageView
     private lateinit var previewView: PreviewView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +50,10 @@ class CameraActivity : AppCompatActivity() {
         }
 
         previewView = findViewById(R.id.previewView)
-        capturedImageView = findViewById(R.id.captured_image_view)
-        val comuButton = findViewById<ImageButton>(R.id.Commu_Button)
-        val frameButton = findViewById<ImageButton>(R.id.Frame_Button)
-        val MypageButton = findViewById<ImageButton>(R.id.Mypage_Button)
-        val listen = findViewById<Button>(R.id.speak_btn)
+        val comuButton = findViewById<ImageView>(R.id.Commu_Button)
+        val frameButton = findViewById<ImageView>(R.id.Frame_Button)
+        val MypageButton = findViewById<ImageView>(R.id.Mypage_Button)
+        //val listen = findViewById<Button>(R.id.speak_btn)
 
         comuButton.setOnClickListener {
             val intent = Intent(this, communityActivity::class.java)
@@ -76,10 +70,11 @@ class CameraActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        /*
         listen.setOnClickListener {
             val intent = Intent(this, ChatActivity::class.java)
             startActivity(intent)
-        }
+        }*/
 
         requestCameraPermission()
 
