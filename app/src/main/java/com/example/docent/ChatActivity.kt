@@ -192,6 +192,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 Toast.makeText(this, "언어를 지원할 수 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 isTTSInitialized = true  // TTS 초기화 성공
+                textToSpeech.setSpeechRate(0.9f)
             }
         } else {
             Toast.makeText(this, "음성전환 엔진 에러입니다.", Toast.LENGTH_SHORT).show()
@@ -212,7 +213,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             if (result.resultCode == RESULT_OK) {
                 val speechResult = result.data?.getStringExtra("speech_result")
                 speechResult?.let {
-                    speechText.setText(it) // EditText에 표시
+                    //speechText.setText(it) // EditText에 표시
                     sendMessageToServer(it) // 받아온 메시지를 바로 서버로 전송
                 }
             }

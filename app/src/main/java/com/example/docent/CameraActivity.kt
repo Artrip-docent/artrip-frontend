@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,12 +24,10 @@ import androidx.lifecycle.LifecycleOwner
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,7 +36,6 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private val CAMERA_PERMISSION_REQUEST_CODE = 1001
     private var capturedImage: Bitmap? = null
-    private lateinit var capturedImageView: ImageView
     private lateinit var previewView: PreviewView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +50,10 @@ class CameraActivity : AppCompatActivity() {
         }
 
         previewView = findViewById(R.id.previewView)
-        capturedImageView = findViewById(R.id.captured_image_view)
-        val comuButton = findViewById<ImageButton>(R.id.Commu_Button)
-        val frameButton = findViewById<ImageButton>(R.id.Frame_Button)
-        val MypageButton = findViewById<ImageButton>(R.id.Mypage_Button)
-        val listen = findViewById<Button>(R.id.speak_btn)
+        val comuButton = findViewById<ImageView>(R.id.Commu_Button)
+        val frameButton = findViewById<ImageView>(R.id.Frame_Button)
+        val MypageButton = findViewById<ImageView>(R.id.Mypage_Button)
+        //val listen = findViewById<Button>(R.id.speak_btn)
 
         comuButton.setOnClickListener {
             val intent = Intent(this, communityActivity::class.java)
@@ -76,10 +70,11 @@ class CameraActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        /*
         listen.setOnClickListener {
             val intent = Intent(this, ChatActivity::class.java)
             startActivity(intent)
-        }
+        }*/
 
         requestCameraPermission()
 
@@ -144,20 +139,37 @@ class CameraActivity : AppCompatActivity() {
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
-                capturedImageView.setImageBitmap(BitmapFactory.decodeFile(photoFile.absolutePath))
-                Log.d("CameraActivity", "onImageSaved called")
-                uploadImageToServer(photoFile)
-                Toast.makeText(applicationContext, "사진 저장 완료: $savedUri", Toast.LENGTH_SHORT).show()
-            }
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
+                    Log.d("CameraActivity", "사진이 저장되었습니다: $savedUri")
 
-            override fun onError(exception: ImageCaptureException) {
-                Log.e("CameraActivity", "사진 저장 실패: ${exception.message}", exception)
+                    // 1) 카메라 unbind
+                    val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
+                    cameraProviderFuture.addListener({
+                        val cameraProvider = cameraProviderFuture.get()
+                        cameraProvider.unbindAll()
+
+                        // 2) 다음 액티비티로 이동 후 finish
+                        val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
+                            putExtra("imageUri", savedUri.toString())
+                        }
+                        startActivity(intent)
+                        finish()
+                    }, ContextCompat.getMainExecutor(this@CameraActivity))
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e("CameraActivity", "사진 저장 실패: ${exception.message}", exception)
+                }
             }
-        })
+        )
     }
+
+
 
     private fun uploadImageToServer(file: File) {
         val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
