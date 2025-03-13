@@ -147,6 +147,8 @@ class CameraActivity : AppCompatActivity() {
                     val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
                     Log.d("CameraActivity", "사진이 저장되었습니다: $savedUri")
 
+                    uploadImageToServer(photoFile)
+
                     // 1) 카메라 unbind
                     val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
                     cameraProviderFuture.addListener({
