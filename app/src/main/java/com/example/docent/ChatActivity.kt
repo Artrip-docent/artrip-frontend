@@ -79,6 +79,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 $description
             """.trimIndent()
 
+            runOnUiThread {
             messages.add(ChatMessage(initialMessage, false)) // 챗봇 메시지로 추가
             chatAdapter.notifyItemInserted(messages.size - 1) // UI 업데이트
             chatRecyclerView.scrollToPosition(messages.size - 1) // 화면 아래로 스크롤
