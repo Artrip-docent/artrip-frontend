@@ -6,7 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
@@ -29,7 +29,7 @@ class ArtRecommendationActivity : AppCompatActivity() {
         // RecyclerView 설정
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         exhibitionAdapter = ExhibitionAdapter(defaultExhibitions)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = GridLayoutManager(this, 2);
         recyclerView.adapter = exhibitionAdapter
 
         // 🚀 서버에서 데이터 가져와서 업데이트 (예시)
