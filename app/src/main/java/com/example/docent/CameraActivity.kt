@@ -83,7 +83,7 @@ class CameraActivity : AppCompatActivity() {
         }
 
         // Mock 데이터 호출 테스트
-        fetchMockData()
+        //fetchMockData()
     }
 
     private fun requestCameraPermission() {
@@ -147,6 +147,8 @@ class CameraActivity : AppCompatActivity() {
                     val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile)
                     Log.d("CameraActivity", "사진이 저장되었습니다: $savedUri")
 
+                    uploadImageToServer(photoFile)
+
                     // 1) 카메라 unbind
                     val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
                     cameraProviderFuture.addListener({
@@ -157,7 +159,6 @@ class CameraActivity : AppCompatActivity() {
                         val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
                             putExtra("imageUri", savedUri.toString())
                         }
-                        startActivity(intent)
                         finish()
                     }, ContextCompat.getMainExecutor(this@CameraActivity))
                 }
@@ -194,7 +195,6 @@ class CameraActivity : AppCompatActivity() {
                             putExtra("title", data.title)
                             putExtra("artist", data.artist)
                             putExtra("year", data.year.toString())
-                            putExtra("style", data.style)
                         }
                         startActivity(intent)
                         finish()
