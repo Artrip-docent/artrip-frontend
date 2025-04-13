@@ -82,8 +82,6 @@ class CameraActivity : AppCompatActivity() {
             takePhoto()
         }
 
-        // Mock 데이터 호출 테스트
-        //fetchMockData()
     }
 
     private fun requestCameraPermission() {
@@ -149,18 +147,6 @@ class CameraActivity : AppCompatActivity() {
 
                     uploadImageToServer(photoFile)
 
-                    // 1) 카메라 unbind
-                    val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
-                    cameraProviderFuture.addListener({
-                        val cameraProvider = cameraProviderFuture.get()
-                        cameraProvider.unbindAll()
-
-                        // 2) 다음 액티비티로 이동 후 finish
-                        val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
-                            putExtra("imageUri", savedUri.toString())
-                        }
-                        finish()
-                    }, ContextCompat.getMainExecutor(this@CameraActivity))
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -185,16 +171,16 @@ class CameraActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val data = response.body()
                     if (data != null) {
-                        Log.d("CameraActivity", "서버 응답 데이터: 제목=${data.title}, 작가=${data.artist}, 연도=${data.year}, 스타일=${data.style}, 설명=${data.description}")
+                        Log.d("CameraActivity", "서버 응답 데이터: 제목=${data.artwork_name}, 작가=${data.artist}, 연도=${data.year}, 설명=${data.description}")
                         // UI 업데이트 (예: 텍스트뷰 업데이트)
                         // exampleTextView.text = "작품 제목: ${data.title}\n작가: ${data.artist}"
 
                         // ChatActivity로 서버 응답 데이터 전달
                         val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
                             putExtra("description", data.description)
-                            putExtra("title", data.title)
+                            putExtra("title", data.artwork_name)
                             putExtra("artist", data.artist)
-                            putExtra("year", data.year.toString())
+                            putExtra("year", data.year)
                         }
                         startActivity(intent)
                         finish()
@@ -214,23 +200,6 @@ class CameraActivity : AppCompatActivity() {
 
 
 
-    private fun fetchMockData() {
-        val apiService = RetrofitClient.instance
-        apiService.getMockArtwork().enqueue(object : Callback<Map<String, String>> {
-            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    Log.d("CameraActivity", "Mock Data: $data")
-                } else {
-                    Log.e("CameraActivity", "Mock Data Error: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                Log.e("CameraActivity", "Mock Data Failure: ${t.message}")
-            }
-        })
-    }
 
     override fun onDestroy() {
         super.onDestroy()

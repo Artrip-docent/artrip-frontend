@@ -9,6 +9,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
 
     defaultConfig {
@@ -63,8 +64,18 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // 원형 시각화를 위한 MPAndroidChart 설치
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
 }
