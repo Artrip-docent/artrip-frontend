@@ -56,7 +56,8 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val title = intent.getStringExtra("title") ?: "제목 없음"
         val artist = intent.getStringExtra("artist") ?: "작가 정보 없음"
         val year = intent.getStringExtra("year") ?: "연도 정보 없음"
-        val style = intent.getStringExtra("style") ?: "스타일 정보 없음"
+
+        Log.d("ChatActivity", "📦 인텐트로 전달된 데이터 - 제목=$title, 작가=$artist, 연도=$year, 설명=$description")
 
         if (messages.isEmpty()) {
             val initialMessage = """
@@ -69,9 +70,12 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 $description
             """.trimIndent()
 
-            messages.add(ChatMessage(initialMessage, false))
-            chatAdapter.notifyItemInserted(messages.size - 1)
-            chatRecyclerView.scrollToPosition(messages.size - 1)
+            runOnUiThread {
+                messages.add(ChatMessage(initialMessage, false)) // 챗봇 메시지로 추가
+                chatAdapter.notifyItemInserted(messages.size - 1) // UI 업데이트
+                chatRecyclerView.scrollToPosition(messages.size - 1) // 화면 아래로 스크롤
+            }
+
         }
 
         speechBtn.setOnClickListener {
