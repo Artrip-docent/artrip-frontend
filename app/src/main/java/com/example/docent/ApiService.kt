@@ -13,18 +13,21 @@ import com.google.gson.JsonObject
 
 interface ApiService {
     @Multipart
+
     @POST("artworks/upload/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
         @Part image: MultipartBody.Part
-    ): Call<RetrofitClient.ArtworkResponse> // Mock 데이터 (artwork_name과 artist)를 반환
-
+    ): Call<RetrofitClient.ArtworkResponse>
 
     @Streaming
     @POST("api/chat/") // SSE 지원하는 단일 API
     fun sendChatMessage(@Body payload: JsonObject): Call<ResponseBody>
 
+    // 사용자 취향 분석 API
+    @POST("artworks/analyze-preference/")
+    fun analyzePreference(@Body request: PreferenceRequest): Call<PreferenceResponse>
+
+    @GET("artworks/random/")
+    fun getRandomArtworks(): Call<List<Artwork>>}
 
 
-    @GET("artworks/upload/") // Dj0ango 서버의 Mock 데이터 반환 엔드포인트
-    fun getMockArtwork(): Call<Map<String, String>> // artwork_name과 artist를 반환
-}

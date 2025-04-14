@@ -20,7 +20,7 @@ class PreferenceanalysisActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        // 다음 버튼 클릭 시 로그인으로 전환
+        // 다음 버튼 클릭 시 작품 선택 창으로 전환
         val nextButton: Button = findViewById(R.id.next4)
         nextButton.setOnClickListener {
             val intent = Intent(this, Keyword1Activity::class.java)
@@ -28,12 +28,6 @@ class PreferenceanalysisActivity : AppCompatActivity() {
 
         }
 
-        // 작품 추천 화면으로 이동
-        val no = findViewById<TextView>(R.id.no)
-        no.setOnClickListener {
-            val intent = Intent(this, ArtRecommendationActivity::class.java)
-            startActivity(intent)
-        }
 
 
     }

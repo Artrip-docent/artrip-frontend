@@ -23,10 +23,10 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        // 로그인 버튼 클릭 시 취향분석 화면으로 전환
+        // 로그인 버튼 클릭 시 작품 추천 화면으로 전환
         val loginButton: Button = findViewById(R.id.login)
         loginButton.setOnClickListener {
-            val intent = Intent(this, PreferenceanalysisActivity::class.java)
+            val intent = Intent(this, ArtRecommendationActivity::class.java)
             startActivity(intent)
         }
 
