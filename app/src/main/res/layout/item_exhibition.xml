@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/art"/>
+        android:src="@drawable/art" />
 
     <TextView
         android:id="@+id/exhibitionTitle"
@@ -19,7 +19,7 @@
         android:text="전시회 제목"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:paddingTop="8dp"/>
+        android:paddingTop="8dp" />
 
     <TextView
         android:id="@+id/exhibitionPeriod"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="기간: YYYY.MM.DD ~ YYYY.MM.DD"
         android:textSize="14sp"
-        android:paddingTop="4dp"/>
+        android:paddingTop="4dp" />
 
     <TextView
         android:id="@+id/exhibitionLocation"
@@ -35,6 +35,6 @@
         android:layout_height="wrap_content"
         android:text="장소: 장소명"
         android:textSize="14sp"
-        android:paddingTop="2dp"/>
+        android:paddingTop="2dp" />
 
 </LinearLayout>
