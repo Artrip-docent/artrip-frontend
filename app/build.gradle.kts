@@ -20,7 +20,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    sourceSets {
+        getByName("main") {
+            assets.srcDirs("src/main/assets", "src\\main\\assets", "src\\main\\assets")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -67,4 +71,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation ("com.opencsv:opencsv:5.8")
 }
