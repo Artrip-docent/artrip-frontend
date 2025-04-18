@@ -30,7 +30,7 @@ interface ApiService {
     @GET("artworks/random/")
     fun getRandomArtworks(): Call<List<Artwork>>
 
-    @GET("api/exhibitions/")
+    @GET("api/exhibition/")
     fun getExhibitions(): Call<List<Exhibition>>}
 
 
