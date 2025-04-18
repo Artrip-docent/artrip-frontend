@@ -28,6 +28,9 @@ interface ApiService {
     fun analyzePreference(@Body request: PreferenceRequest): Call<PreferenceResponse>
 
     @GET("artworks/random/")
-    fun getRandomArtworks(): Call<List<Artwork>>}
+    fun getRandomArtworks(): Call<List<Artwork>>
+
+    @GET("api/exhibitions/")
+    fun getExhibitions(): Call<List<Exhibition>>}
 
 
