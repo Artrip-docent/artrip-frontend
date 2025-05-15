@@ -37,6 +37,11 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private var sseThread: Thread? = null  // SSE 쓰레드 관리
 
+    private var firstSpoken = false          // 첫 문장 발화 여부
+    private var spokenSentences = mutableSetOf<String>()  // 중복 방지용
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -134,7 +139,10 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             chatAdapter.notifyItemChanged(aiMessageIndex)
             chatRecyclerView.scrollToPosition(messages.size - 1)
 
+            // ✅ buffer 누적
             ttsBuffer += chunkMessage
+
+            // ✅ 문장 단위로 분해
             val sentenceRegex = Regex("([^.?!]+[.?!])")
             val matches = sentenceRegex.findAll(ttsBuffer).toList()
 
@@ -142,13 +150,14 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 val lastMatch = matches.last()
                 val endIndex = lastMatch.range.last + 1
 
-                for (match in matches) {
+                for ((_, match) in matches.withIndex()) {
                     val sentence = match.value.trim()
-                    if (sentence.isNotEmpty()) {
+                    if (sentence.isNotEmpty() && spokenSentences.add(sentence)) { // ✅ 중복 방지
                         speakText(sentence)
                     }
                 }
 
+                // spoken되지 않은 부분만 buffer에 남김
                 ttsBuffer = if (endIndex < ttsBuffer.length) {
                     ttsBuffer.substring(endIndex)
                 } else {
@@ -158,7 +167,11 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
+
     private fun sendMessageToServer(message: String) {
+        ttsBuffer = ""
+        spokenSentences.clear()  // ✅ 매 질문마다 초기화
+
         messages.add(ChatMessage(message, true))
         chatAdapter.notifyItemInserted(messages.size - 1)
         chatRecyclerView.scrollToPosition(messages.size - 1)
@@ -179,7 +192,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 Toast.makeText(this, "언어를 지원할 수 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 isTTSInitialized = true
-                textToSpeech.setSpeechRate(0.9f)
+                textToSpeech.setSpeechRate(1.0f)
             }
         } else {
             Toast.makeText(this, "음성전환 엔진 에러입니다.", Toast.LENGTH_SHORT).show()
@@ -188,7 +201,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private fun speakText(text: String) {
         if (isTTSInitialized) {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+            textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, null)
         } else {
             Log.e("ChatActivity", "TTS가 초기화되지 않았습니다!")
         }
