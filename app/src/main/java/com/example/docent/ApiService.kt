@@ -31,6 +31,11 @@ interface ApiService {
     fun getRandomArtworks(): Call<List<Artwork>>
 
     @GET("api/exhibition/")
-    fun getExhibitions(): Call<List<Exhibition>>}
+    fun getExhibitions(): Call<List<Exhibition>>
+
+    @GET("api/reviews/reviews/")
+    fun getReviewsByExhibition(@Query("exhibition") exhibitionId: Int): Call<List<Review>>
+
+}
 
 
