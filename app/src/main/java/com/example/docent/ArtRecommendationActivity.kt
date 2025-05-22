@@ -54,8 +54,16 @@ class ArtRecommendationActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Exhibition>>, response: Response<List<Exhibition>>) {
                 if (response.isSuccessful) {
                     val exhibitions = response.body() ?: emptyList()
-                    exhibitionAdapter = ExhibitionAdapter(exhibitions)
-                    findViewById<RecyclerView>(R.id.recyclerView).adapter = exhibitionAdapter
+
+                    exhibitionAdapter = ExhibitionAdapter(exhibitions) { exhibition ->
+                        val intent = Intent(this@ArtRecommendationActivity, ReviewActivity::class.java)
+                        intent.putExtra("EXHIBITION_ID", exhibition.id)
+                        startActivity(intent)
+                    }
+
+                    val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+                    recyclerView.adapter = exhibitionAdapter
+
                 } else {
                     Log.e("API", "응답 실패: ${response.code()}")
                 }
@@ -66,4 +74,5 @@ class ArtRecommendationActivity : AppCompatActivity() {
             }
         })
     }
+
 }
