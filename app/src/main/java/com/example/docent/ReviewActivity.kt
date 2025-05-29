@@ -1,7 +1,10 @@
 package com.example.docent
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +34,19 @@ class ReviewActivity : AppCompatActivity() {
             return
         }
 
+        val preview = findViewById<Button>(R.id.preview_btn)
+        preview.setOnClickListener{
+            val intent = Intent(this, ArtRecommendationActivity::class.java)
+            startActivity(intent)
+        }
         fetchReviews(exhibitionId)
+
+        var next_review = findViewById<Button>(R.id.review_next)
+        next_review.setOnClickListener {
+            val intent = Intent(this, ReviewWriteActivity::class.java)
+            intent.putExtra("EXHIBITION_ID", exhibitionId)
+            startActivity(intent)
+        }
     }
 
     private fun fetchReviews(exhibitionId: Int) {
