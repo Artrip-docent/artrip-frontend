@@ -12,8 +12,13 @@ import retrofit2.http.*
 import com.google.gson.JsonObject
 
 interface ApiService {
-    @Multipart
+    @POST("auth/register/")
+    fun registerUser(@Body request: RegisterRequest): Call<RegisterResponse>
 
+    @POST("auth/login/")
+    fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+
+    @Multipart
     @POST("artworks/upload/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
         @Part image: MultipartBody.Part

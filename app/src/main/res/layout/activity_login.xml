@@ -18,6 +18,7 @@
     </TextView>
 
     <EditText
+        android:id="@+id/emailInput"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="이메일"
@@ -29,6 +30,7 @@
 
 
     <EditText
+        android:id="@+id/passwordInput"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="비밀번호"
@@ -90,12 +92,6 @@
         android:layout_gravity="center"
         android:src="@drawable/kakao">
     </ImageView>
-
-
-
-
-
-
 
 
 </LinearLayout>
