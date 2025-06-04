@@ -41,6 +41,8 @@ interface ApiService {
     @GET("api/reviews/reviews/")
     fun getReviewsByExhibition(@Query("exhibition") exhibitionId: Int): Call<List<Review>>
 
+    @POST("api/reviews/reviews/")
+    fun postReview(@Body reviewRequest: ReviewRequest): Call<Review>
 }
 
 
