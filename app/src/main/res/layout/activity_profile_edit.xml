@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profileEditRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/imageViewProfile"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:src="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle_shape" />
+
+    <EditText
+        android:id="@+id/editNickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="닉네임"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="저장"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>
