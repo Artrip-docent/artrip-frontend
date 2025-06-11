@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#FFFFFF">
 
+    <!-- 설정 버튼 -->
     <ImageView
         android:id="@+id/setting"
         android:layout_width="match_parent"
@@ -17,16 +17,29 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- 프로필 이미지 -->
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/profile"
-            android:layout_marginTop="50dp" />
+            android:id="@+id/imageViewProfile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile" />
 
-        <ImageView
-            android:layout_width="match_parent"
+        <!-- 닉네임 텍스트뷰 -->
+        <TextView
+            android:id="@+id/textViewNickname"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/profile2" />
+            android:text="닉네임"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <!-- 기존에 있던 profile 관련 이미지 제거 또는 유지 (필요시) -->
 
         <LinearLayout
             android:id="@+id/main"
@@ -81,7 +94,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="채팅 이력"
+                android:text="프로필변경"
                 android:textStyle="bold"
                 android:layout_marginLeft="60dp" />
         </LinearLayout>
@@ -93,7 +106,7 @@
             android:layout_height="wrap_content"
             android:text="취향 분석 시작하기"
             android:gravity="center"
-            android:textColor="@color/black">
+            android:textColor="@color/black" >
         </TextView>
 
         <TextView
@@ -104,7 +117,7 @@
             android:gravity="center"
             android:layout_marginTop="8dp"
             android:textColor="#aaaaaa"
-            android:textSize="13dp">
+            android:textSize="13dp" >
         </TextView>
 
         <com.github.mikephil.charting.charts.PieChart
@@ -115,7 +128,6 @@
             android:layout_marginBottom="80dp"
             android:layout_below="@id/logout"
             />
-
 
     </LinearLayout>
 
@@ -178,9 +190,3 @@
     </FrameLayout>
 
 </RelativeLayout>
-
-
-
-
-
-

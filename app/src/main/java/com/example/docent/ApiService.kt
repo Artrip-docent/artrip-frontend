@@ -10,6 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.*
 import com.google.gson.JsonObject
+import okhttp3.RequestBody
 
 interface ApiService {
     @POST("auth/register/")
@@ -43,6 +44,19 @@ interface ApiService {
 
     @POST("api/reviews/reviews/")
     fun postReview(@Body reviewRequest: ReviewRequest): Call<Review>
+
+    @Multipart
+    @PATCH("auth/update-profile/")
+    fun updateProfile(
+        @Header("Authorization") token: String,
+        @Part profileImage: MultipartBody.Part?,
+        @Part("nickname") nickname: RequestBody
+    ): Call<ResponseBody>
+
+    @GET("auth/user-info/")
+    fun getUserInfo(
+        @Header("Authorization") token: String
+    ): Call<UserInfoResponse>
 }
 
 
