@@ -23,7 +23,8 @@ data class LoginRequest(
 data class LoginResponse(
     val message: String,
     val access: String,
-    val refresh: String
+    val refresh: String,
+    val user_id: Int
 )
 
 class LoginActivity : AppCompatActivity() {
@@ -64,6 +65,7 @@ class LoginActivity : AppCompatActivity() {
                             prefs.edit().apply {
                                 putString("accessToken", loginResponse.access)
                                 putString("refreshToken", loginResponse.refresh)
+                                putInt("user_id", loginResponse.user_id)
                                 apply()
                             }
 

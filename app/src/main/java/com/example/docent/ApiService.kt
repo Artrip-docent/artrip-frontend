@@ -57,6 +57,13 @@ interface ApiService {
     fun getUserInfo(
         @Header("Authorization") token: String
     ): Call<UserInfoResponse>
+
+    // 좋아요 토글 API
+    @POST("api/exhibition/toggle-like/")
+    fun toggleLike(@Body body: JsonObject): Call<JsonObject>
+
+    @GET("api/exhibition/sorted-user/")
+    fun getSortedExhibitions(@Query("user_id") userId: Int): Call<List<Exhibition>>
 }
 
 
