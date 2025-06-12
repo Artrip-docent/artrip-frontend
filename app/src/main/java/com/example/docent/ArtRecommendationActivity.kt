@@ -50,16 +50,28 @@ class ArtRecommendationActivity : AppCompatActivity() {
     }
 
     private fun fetchExhibitionsFromServer() {
-        RetrofitClient.instance.getExhibitions().enqueue(object : Callback<List<Exhibition>> {
+        val userId = getSharedPreferences("auth", MODE_PRIVATE).getInt("user_id", -1)
+
+        if (userId == -1) {
+            Log.e("User", "유저 ID가 유효하지 않음")
+            return
+        }
+
+        RetrofitClient.instance.getSortedExhibitions(userId).enqueue(object : Callback<List<Exhibition>> {
             override fun onResponse(call: Call<List<Exhibition>>, response: Response<List<Exhibition>>) {
                 if (response.isSuccessful) {
                     val exhibitions = response.body() ?: emptyList()
 
-                    exhibitionAdapter = ExhibitionAdapter(exhibitions) { exhibition ->
-                        val intent = Intent(this@ArtRecommendationActivity, ReviewActivity::class.java)
-                        intent.putExtra("EXHIBITION_ID", exhibition.id)
-                        startActivity(intent)
-                    }
+                    exhibitionAdapter = ExhibitionAdapter(
+                        exhibitions,
+                        { exhibition ->
+                            val intent = Intent(this@ArtRecommendationActivity, ReviewActivity::class.java)
+                            intent.putExtra("EXHIBITION_ID", exhibition.id)
+                            startActivity(intent)
+                        },
+                        userId
+                    )
+
 
                     val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.adapter = exhibitionAdapter
@@ -74,5 +86,6 @@ class ArtRecommendationActivity : AppCompatActivity() {
             }
         })
     }
+
 
 }

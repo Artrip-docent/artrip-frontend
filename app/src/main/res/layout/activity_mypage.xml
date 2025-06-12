@@ -87,7 +87,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="좋아요 한 작품"
+                android:text="좋아요 한 전시"
                 android:textStyle="bold"
                 android:layout_marginLeft="65dp" />
 

@@ -19,6 +19,7 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
         holder.bind(message)
     }
 
+
     override fun getItemCount(): Int = messages.size
 
     override fun getItemViewType(position: Int): Int {
