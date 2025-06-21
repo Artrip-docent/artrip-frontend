@@ -48,12 +48,12 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/ticket"
-                android:src="@drawable/viewing"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="15dp" />
+                android:src="@drawable/viewing" />
 
             <ImageView
                 android:id="@+id/heart"

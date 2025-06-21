@@ -64,6 +64,9 @@ interface ApiService {
 
     @GET("api/exhibition/sorted-user/")
     fun getSortedExhibitions(@Query("user_id") userId: Int): Call<List<Exhibition>>
+
+    @GET("api/artworks/viewinghistory/{user_id}")
+    fun getViewedExhibitions(@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
 }
 
 
