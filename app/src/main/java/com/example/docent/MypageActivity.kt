@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
@@ -67,8 +68,8 @@ class MypageActivity : AppCompatActivity() {
 
                         Glide.with(this@MypageActivity)
                             .load(userInfo.profile_image)
-                            .placeholder(R.drawable.profile)
-                            .error(R.drawable.profile)
+                            .placeholder(R.drawable.ic_profile)
+                            .error(R.drawable.ic_profile)
                             .into(imageViewProfile)
                     }
                 } else {
@@ -152,6 +153,8 @@ class MypageActivity : AppCompatActivity() {
         data.setDrawValues(false)
         pieChart.data = data
         pieChart.invalidate()
+
+
     }
 
     private fun saveTagsToPreferences(tags: List<String>) {
@@ -189,27 +192,21 @@ class MypageActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<ImageView>(R.id.museum).setOnClickListener {
+        findViewById<ImageView>(R.id.nav_home).setOnClickListener {
             startActivity(Intent(this, ArtRecommendationActivity::class.java))
             finish()
         }
 
-        findViewById<ImageView>(R.id.chat).setOnClickListener {
+        findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
             startActivity(Intent(this, ProfileEditActivity::class.java))
             finish()
         }
 
-        findViewById<ImageView>(R.id.Camera_Button).setOnClickListener {
-            startActivity(Intent(this, CameraActivity::class.java))
+        findViewById<ImageView>(R.id.nav_camera).setOnClickListener {
+            startActivity(Intent(this, ExhibitionSelectActivity::class.java))
         }
 
-        findViewById<ImageView>(R.id.Commu_Button).setOnClickListener {
-            startActivity(Intent(this, communityActivity::class.java))
-        }
 
-        findViewById<ImageView>(R.id.setting).setOnClickListener {
-            startActivity(Intent(this, SettingActivity::class.java))
-        }
 
         findViewById<TextView>(R.id.preferenceanalysis).setOnClickListener {
             startActivity(Intent(this, PreferenceanalysisActivity::class.java))

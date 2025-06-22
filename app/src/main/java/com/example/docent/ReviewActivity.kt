@@ -34,14 +34,14 @@ class ReviewActivity : AppCompatActivity() {
             return
         }
 
-        val preview = findViewById<Button>(R.id.preview_btn)
+        val preview = findViewById<ImageView>(R.id.iv_back)
         preview.setOnClickListener{
             val intent = Intent(this, ArtRecommendationActivity::class.java)
             startActivity(intent)
         }
         fetchReviews(exhibitionId)
 
-        var next_review = findViewById<Button>(R.id.review_next)
+        var next_review = findViewById<Button>(R.id.btn_review_next)
         next_review.setOnClickListener {
             val intent = Intent(this, ReviewWriteActivity::class.java)
             intent.putExtra("EXHIBITION_ID", exhibitionId)
