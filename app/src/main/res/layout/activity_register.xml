@@ -1,55 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:background="#FFFFFF">
 
-    <FrameLayout
+    <!-- Back Arrow -->
+    <ImageView
+        android:id="@+id/arrow1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow"
+        android:contentDescription="Back Arrow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:id="@+id/arrow1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
-            android:layout_marginLeft="15dp"
-            android:src="@drawable/arrow" />
-
-    </FrameLayout>
-
+    <!-- Title -->
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="계정 정보를 입력하세요."
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:textSize="20dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="이메일"
-        android:layout_marginLeft="15dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/arrow1"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="60dp" />
 
+    <!-- Email Label -->
+    <TextView
+        android:id="@+id/emailLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이메일"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- Email Input with custom underline -->
     <EditText
         android:id="@+id/emailInput"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="13dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="15dp" />
+        android:hint="이메일을 입력하세요"
+        android:textSize="15dp"
+        android:background="@null"
+        android:padding="0dp"
+        app:layout_constraintTop_toBottomOf="@id/emailLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp" />
 
-    <Button
+    <!-- Underline View -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#000000"
+        app:layout_constraintTop_toBottomOf="@id/emailInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <!-- Next Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/next1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="330dp"
+        android:layout_height="60dp"
         android:text="다음"
-        android:backgroundTint="#000000"
-        android:layout_marginTop="370dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp" />
-</LinearLayout>
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2C2C2C"
+        app:cornerRadius="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

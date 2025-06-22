@@ -37,11 +37,23 @@ class CameraActivity : AppCompatActivity() {
     private val CAMERA_PERMISSION_REQUEST_CODE = 1001
     private var capturedImage: Bitmap? = null
     private lateinit var previewView: PreviewView
+    private var selectedExhibitionId: Int = -1
+    private var userId: Int = -1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_camera)
+
+        selectedExhibitionId = intent.getIntExtra("EXHIBITION_ID", -1)
+        userId = getSharedPreferences("auth", MODE_PRIVATE).getInt("user_id", -1)
+
+        if (selectedExhibitionId == -1 || userId == -1) {
+            Toast.makeText(this, "전시 ID 또는 사용자 ID가 없습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -50,17 +62,12 @@ class CameraActivity : AppCompatActivity() {
         }
 
         previewView = findViewById(R.id.previewView)
-        val comuButton = findViewById<ImageView>(R.id.Commu_Button)
-        val frameButton = findViewById<ImageView>(R.id.Frame_Button)
-        val MypageButton = findViewById<ImageView>(R.id.Mypage_Button)
+        val homeButton = findViewById<ImageView>(R.id.nav_home)
+        val MypageButton = findViewById<ImageView>(R.id.nav_profile)
         //val listen = findViewById<Button>(R.id.speak_btn)
 
-        comuButton.setOnClickListener {
-            val intent = Intent(this, communityActivity::class.java)
-            startActivity(intent)
-        }
 
-        frameButton.setOnClickListener {
+        homeButton.setOnClickListener {
             val intent = Intent(this, ArtRecommendationActivity::class.java)
             startActivity(intent)
         }
@@ -78,7 +85,8 @@ class CameraActivity : AppCompatActivity() {
 
         requestCameraPermission()
 
-        findViewById<Button>(R.id.capture_button).setOnClickListener {
+        val captureButton = findViewById<ImageView>(R.id.capture_button)
+        captureButton.setOnClickListener {
             takePhoto()
         }
 
@@ -162,8 +170,12 @@ class CameraActivity : AppCompatActivity() {
         val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
         val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
+        // 실제 사용자 ID와 선택한 전시회 ID 사용
+        val userIdRequest = RequestBody.create("text/plain".toMediaTypeOrNull(), userId.toString())
+        val exhibitionIdRequest = RequestBody.create("text/plain".toMediaTypeOrNull(), selectedExhibitionId.toString())
+
         val apiService = RetrofitClient.instance
-        apiService.uploadArtwork(body).enqueue(object : Callback<RetrofitClient.ArtworkResponse> {
+        apiService.uploadArtwork(body, userIdRequest, exhibitionIdRequest).enqueue(object : Callback<RetrofitClient.ArtworkResponse> {
             override fun onResponse(
                 call: Call<RetrofitClient.ArtworkResponse>,
                 response: Response<RetrofitClient.ArtworkResponse>

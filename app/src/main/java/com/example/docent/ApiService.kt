@@ -22,7 +22,9 @@ interface ApiService {
     @Multipart
     @POST("artworks/upload/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
-        @Part image: MultipartBody.Part
+        @Part image: MultipartBody.Part,
+        @Part("user_id") userId: RequestBody,
+        @Part("exhibition_id") exhibitionId: RequestBody
     ): Call<RetrofitClient.ArtworkResponse>
 
     @Streaming
@@ -67,6 +69,11 @@ interface ApiService {
 
     @GET("api/artworks/viewinghistory/{user_id}")
     fun getViewedExhibitions(@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
+
+    @GET("api/exhibition/search/")
+    fun searchExhibitions(@Query("q") query: String): Call<ExhibitionSearchResponse>
+
+
 }
 
 
