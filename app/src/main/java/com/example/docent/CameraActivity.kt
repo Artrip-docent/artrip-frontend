@@ -167,15 +167,26 @@ class CameraActivity : AppCompatActivity() {
 
 
     private fun uploadImageToServer(file: File) {
+        val token = getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)
+        if (token.isNullOrBlank()) {
+            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val bearerToken = "Bearer $token"
+
         val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file)
         val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-        // 실제 사용자 ID와 선택한 전시회 ID 사용
         val userIdRequest = RequestBody.create("text/plain".toMediaTypeOrNull(), userId.toString())
         val exhibitionIdRequest = RequestBody.create("text/plain".toMediaTypeOrNull(), selectedExhibitionId.toString())
 
         val apiService = RetrofitClient.instance
-        apiService.uploadArtwork(body, userIdRequest, exhibitionIdRequest).enqueue(object : Callback<RetrofitClient.ArtworkResponse> {
+        apiService.uploadArtwork(
+            bearerToken,           //  첫 번째 인자
+            body,                  //  MultipartBody.Part
+            userIdRequest,         //  RequestBody
+            exhibitionIdRequest    //  RequestBody
+        ).enqueue(object : Callback<RetrofitClient.ArtworkResponse> {
             override fun onResponse(
                 call: Call<RetrofitClient.ArtworkResponse>,
                 response: Response<RetrofitClient.ArtworkResponse>
@@ -184,10 +195,6 @@ class CameraActivity : AppCompatActivity() {
                     val data = response.body()
                     if (data != null) {
                         Log.d("CameraActivity", "서버 응답 데이터: 제목=${data.artwork_name}, 작가=${data.artist}, 연도=${data.year}, 설명=${data.description}")
-                        // UI 업데이트 (예: 텍스트뷰 업데이트)
-                        // exampleTextView.text = "작품 제목: ${data.title}\n작가: ${data.artist}"
-
-                        // ChatActivity로 서버 응답 데이터 전달
                         val intent = Intent(this@CameraActivity, ChatActivity::class.java).apply {
                             putExtra("description", data.description)
                             putExtra("title", data.artwork_name)
@@ -209,6 +216,7 @@ class CameraActivity : AppCompatActivity() {
             }
         })
     }
+
 
 
 

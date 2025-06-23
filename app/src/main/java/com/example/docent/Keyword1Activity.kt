@@ -11,6 +11,7 @@ import com.example.docent.databinding.ActivityKeyword1Binding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import okhttp3.ResponseBody
 
 class Keyword1Activity : AppCompatActivity() {
 
@@ -45,8 +46,13 @@ class Keyword1Activity : AppCompatActivity() {
 
                 val authHeader = "Bearer $token"
 
+                val userId = prefs.getInt("user_id", -1)
+                if (userId == -1) {
+                    Toast.makeText(this, "유저 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 val preferenceRequest = PreferenceRequest(
-                    user_id = "user_123", // 실제 로그인 유저 ID로 변경 필요
+                    user_id = userId.toString(),
                     artwork_ids = selectedArtworkIds
                 )
 
@@ -57,6 +63,19 @@ class Keyword1Activity : AppCompatActivity() {
                             response: Response<PreferenceResponse>
                         ) {
                             if (response.isSuccessful) {
+
+                                prefs.edit().putBoolean("isFirstLogin", false).apply()
+
+                                RetrofitClient.instance.markPreferenceComplete(authHeader)
+                                    .enqueue(object : Callback<ResponseBody> {
+                                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                            Log.d("Preference", "분석 완료 처리됨")
+                                        }
+
+                                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                            Log.e("Preference", "분석 완료 처리 실패: ${t.message}")
+                                        }
+                                    })
                                 val intent = Intent(this@Keyword1Activity, MypageActivity::class.java)
                                 intent.putIntegerArrayListExtra("selected_artwork_ids", ArrayList(selectedArtworkIds))
                                 startActivity(intent)
