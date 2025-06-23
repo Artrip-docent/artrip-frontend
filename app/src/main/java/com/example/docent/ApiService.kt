@@ -32,7 +32,7 @@ interface ApiService {
     @POST("api/chat/") // SSE 지원하는 단일 API
     fun sendChatMessage(
         @Header("Authorization") token: String,
-        @Body payload: JsonObject
+        @Body jsonBody: JsonObject
     ): Call<ResponseBody>
 
     // 사용자 취향 분석 API
@@ -84,12 +84,25 @@ interface ApiService {
     fun getSortedExhibitions(@Query("user_id") userId: Int): Call<List<Exhibition>>
 
     @GET("api/artworks/viewinghistory/{user_id}")
-    fun getViewedExhibitions(@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
+    fun getViewedExhibitions(@Header("Authorization") token: String,@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
 
     @GET("api/exhibition/search/")
     fun searchExhibitions(@Query("q") query: String): Call<ExhibitionSearchResponse>
 
+    @GET("api/artworks/viewinghistory/{user_id}/{exhibition_id}/")
+    fun getViewedArtworks(
+        @Header("Authorization") token: String,
+        @Path("user_id") userId: Int,
+        @Path("exhibition_id") exhibitionId: Int
+    ): Call<List<Artwork>>
 
+    @GET("api/chat/history")
+    fun getChatHistory(
+        @Header("Authorization") token: String,
+        @Query("user_id") userId: Int,
+        @Query("artwork_id") artworkId: Int,
+        @Query("exhibition_id") exhibitionId: Int
+    ): Call<List<ChatHistoryItem>>
 }
 
 

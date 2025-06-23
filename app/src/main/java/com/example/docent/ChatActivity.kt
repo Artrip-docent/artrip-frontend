@@ -61,19 +61,20 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val title = intent.getStringExtra("title") ?: "제목 없음"
         val artist = intent.getStringExtra("artist") ?: "작가 정보 없음"
         val year = intent.getStringExtra("year") ?: "연도 정보 없음"
-
+//        val artworkId = intent.getIntExtra("artwork_id", -1)
+//        val exhibitionId = intent.getIntExtra("exhibition_id", -1)
         Log.d("ChatActivity", "📦 인텐트로 전달된 데이터 - 제목=$title, 작가=$artist, 연도=$year, 설명=$description")
 
         if (messages.isEmpty()) {
             val initialMessage = """
-                🎨 작품 정보 🎨
-                제목: $title
-                작가: $artist
-                연도: $year
+            |🎨 작품 정보 🎨
+            |제목: $title
+            |작가: $artist
+            |연도: $year
                 
-                📝 설명:
-                $description
-            """.trimIndent()
+            |📝 설명:
+            |$description
+            """.trimMargin()
 
             runOnUiThread {
                 messages.add(ChatMessage(initialMessage, false)) // 챗봇 메시지로 추가
@@ -101,11 +102,17 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun listenToSSE(userMessage: String, aiMessageIndex: Int) {
         // 이전 SSE 쓰레드 종료
         sseThread?.interrupt()
-
+        val artworkId = intent.getIntExtra("artwork_id", -1)
+        val exhibitionId = intent.getIntExtra("exhibition_id", -1)
+        val token = "Bearer ${getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)}"
+        val userId = getSharedPreferences("auth", MODE_PRIVATE).getInt("user_id", -1)
         val jsonObject = JsonObject().apply {
             addProperty("message", userMessage)
+            addProperty("artwork_id", artworkId)                    // 추가된 artwork ID
+            addProperty("exhibition_id", exhibitionId)
+            addProperty("user_id", userId)
         }
-        val token = "Bearer ${getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)}"
+
         val call = RetrofitClient.instance.sendChatMessage(token, jsonObject)
 
 
@@ -170,7 +177,7 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
 
-    private fun sendMessageToServer(message: String) {
+    private fun sendMessageToServer(message: String,) {
         ttsBuffer = ""
         spokenSentences.clear()  // ✅ 매 질문마다 초기화
 
@@ -181,10 +188,15 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         messages.add(ChatMessage("", false))
         val aiMessageIndex = messages.size - 1
         chatAdapter.notifyItemInserted(aiMessageIndex)
-
+        val artworkId = intent.getIntExtra("artwork_id", -1)
+        val exhibitionId = intent.getIntExtra("exhibition_id", -1)
         val token = "Bearer ${getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)}"
+        val userId = getSharedPreferences("auth", MODE_PRIVATE).getInt("user_id", -1)
         val jsonObject = JsonObject().apply {
             addProperty("message", message)
+            addProperty("artwork_id", artworkId)                    // 추가된 artwork ID
+            addProperty("exhibition_id", exhibitionId)
+            addProperty("user_id", userId)
         }
         val call = RetrofitClient.instance.sendChatMessage(token, jsonObject)
 

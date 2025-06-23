@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- 작품 이미지 -->
+    <ImageView
+        android:id="@+id/artworkImage"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/darker_gray" />
+
+    <!-- 작품명 -->
+    <TextView
+        android:id="@+id/artworkTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="작품 제목"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingTop="6dp" />
+
+    <!-- 작가명 -->
+    <TextView
+        android:id="@+id/artworkArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="작가명"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:ellipsize="end"
+        android:maxLines="1" />
+</LinearLayout>
+

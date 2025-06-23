@@ -44,8 +44,16 @@ class exhibitionviewingActivity : AppCompatActivity() {
     }
 
     private fun fetchViewedExhibitions(userId: Int) {
-        // Retrofit 사용
-        val call = RetrofitClient.instance.getViewedExhibitions(userId)
+        val token = prefs.getString("accessToken", null)
+
+        if (token.isNullOrBlank()) {
+            Toast.makeText(this, "인증 토큰이 없습니다. 다시 로그인해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val bearerToken = "Bearer $token"
+        val call = RetrofitClient.instance.getViewedExhibitions(bearerToken, userId)
+
         call.enqueue(object : Callback<List<ViewedExhibition>> {
             override fun onResponse(
                 call: Call<List<ViewedExhibition>>,

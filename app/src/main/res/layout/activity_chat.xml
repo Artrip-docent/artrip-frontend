@@ -9,7 +9,16 @@
     android:padding="8dp"
     android:background="#FFFFFF"
     tools:context=".ChatActivity">
-
+    <TextView
+        android:id="@+id/chatTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="채팅 이력"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="12dp"
+        android:visibility="gone"/>
     <!-- 채팅 메시지를 표시할 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
