@@ -24,7 +24,8 @@ data class LoginResponse(
     val message: String,
     val access: String,
     val refresh: String,
-    val user_id: Int
+    val user_id: Int,
+    val is_first_login: Boolean // 추가
 )
 
 class LoginActivity : AppCompatActivity() {
@@ -60,20 +61,28 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse != null) {
-                            // ✅ 토큰 저장
+                            // 토큰 저장
                             val prefs = getSharedPreferences("auth", MODE_PRIVATE)
                             prefs.edit().apply {
                                 putString("accessToken", loginResponse.access)
                                 putString("refreshToken", loginResponse.refresh)
                                 putInt("user_id", loginResponse.user_id)
+                                putBoolean("isFirstLogin", loginResponse.is_first_login) // 추가
                                 apply()
                             }
 
                             Toast.makeText(this@LoginActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@LoginActivity, Keyword1Activity::class.java)
-                            startActivity(intent)
+
+                            // is_first_login 여부에 따라 이동 분기
+                            val nextIntent = if (loginResponse.is_first_login) {
+                                Intent(this@LoginActivity, Keyword1Activity::class.java)
+                            } else {
+                                Intent(this@LoginActivity, ArtRecommendationActivity::class.java) // 첫 로그인 아니면 전시회 페이지로
+                            }
+
+                            startActivity(nextIntent)
                             finish()
-                        }else {
+                        } else {
                             Toast.makeText(this@LoginActivity, "응답이 비어 있습니다.", Toast.LENGTH_SHORT).show()
                         }
                     } else {
