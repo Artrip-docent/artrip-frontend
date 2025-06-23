@@ -1,5 +1,7 @@
 package com.example.docent
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 data class ViewedExhibition(
+    val id: Int,
     val title: String,
     val start_date: String,
     val end_date: String,
@@ -44,6 +47,16 @@ class ViewedExhibitionAdapter(
             .load(exhibition.image_url)
             .placeholder(R.drawable.art)
             .into(holder.image)
+
+        // ✅ 이미지 클릭 시 작품 목록으로 이동
+        holder.image.setOnClickListener {
+            val context = holder.itemView.context
+            Log.d("AdapterDebug", "전시회 ID: ${exhibition.id}")
+            val intent = Intent(context, artworkviewingActivity::class.java).apply {
+                putExtra("exhibition_id", exhibition.id)
+            }
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = exhibitionList.size

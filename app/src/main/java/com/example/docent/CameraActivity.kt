@@ -200,6 +200,8 @@ class CameraActivity : AppCompatActivity() {
                             putExtra("title", data.artwork_name)
                             putExtra("artist", data.artist)
                             putExtra("year", data.year)
+                            putExtra("artwork_id", data.artwork_id)
+                            putExtra("exhibition_id", selectedExhibitionId)
                         }
                         startActivity(intent)
                         finish()
