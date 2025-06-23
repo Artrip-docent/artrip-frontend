@@ -33,10 +33,14 @@ interface ApiService {
 
     // 사용자 취향 분석 API
     @POST("artworks/analyze-preference/")
-    fun analyzePreference(@Body request: PreferenceRequest): Call<PreferenceResponse>
+    fun analyzePreference(
+        @Header("Authorization") token: String,
+        @Body request: PreferenceRequest
+    ): Call<PreferenceResponse>
+
 
     @GET("artworks/random/")
-    fun getRandomArtworks(): Call<List<Artwork>>
+    fun getRandomArtworks(@Header("Authorization") token: String): Call<List<Artwork>>
 
     @GET("api/exhibition/")
     fun getExhibitions(): Call<List<Exhibition>>
@@ -45,7 +49,11 @@ interface ApiService {
     fun getReviewsByExhibition(@Query("exhibition") exhibitionId: Int): Call<List<Review>>
 
     @POST("api/reviews/reviews/")
-    fun postReview(@Body reviewRequest: ReviewRequest): Call<Review>
+    fun postReview(
+        @Header("Authorization") token: String,
+        @Body reviewRequest: ReviewRequest
+    ): Call<Review>
+
 
     @Multipart
     @PATCH("auth/update-profile/")
