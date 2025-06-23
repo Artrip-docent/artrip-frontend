@@ -22,6 +22,7 @@ interface ApiService {
     @Multipart
     @POST("artworks/upload/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
+        @Header("Authorization") token: String,
         @Part image: MultipartBody.Part,
         @Part("user_id") userId: RequestBody,
         @Part("exhibition_id") exhibitionId: RequestBody
@@ -54,6 +55,10 @@ interface ApiService {
         @Body reviewRequest: ReviewRequest
     ): Call<Review>
 
+    @POST("auth/complete-preference/")
+    fun markPreferenceComplete(
+        @Header("Authorization") token: String
+    ): Call<ResponseBody>
 
     @Multipart
     @PATCH("auth/update-profile/")
