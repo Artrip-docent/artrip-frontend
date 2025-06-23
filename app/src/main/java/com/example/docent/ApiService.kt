@@ -54,6 +54,10 @@ interface ApiService {
         @Body reviewRequest: ReviewRequest
     ): Call<Review>
 
+    @POST("artworks/mark-preference-complete/")
+    fun markPreferenceComplete(
+        @Header("Authorization") token: String
+    ): Call<ResponseBody>
 
     @Multipart
     @PATCH("auth/update-profile/")
