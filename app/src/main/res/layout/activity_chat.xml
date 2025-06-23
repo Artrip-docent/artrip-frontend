@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
+    android:background="#FFFFFF"
     tools:context=".ChatActivity">
 
     <!-- 채팅 메시지를 표시할 RecyclerView -->
@@ -46,15 +47,20 @@
             android:background="@android:drawable/edit_text"
             android:padding="8dp" />
 
-        <!-- 텍스트 전송 버튼 -->
-        <Button
+        <!-- 둥근 전송 버튼 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/send_text_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:text="전송"
-            android:backgroundTint="@color/black"
-            android:textColor="@color/white"
-            android:layout_marginLeft="8dp" />
+            android:textColor="@android:color/white"
+            android:backgroundTint="#000000"
+            app:cornerRadius="20dp"
+            app:iconGravity="textStart" />
+
     </LinearLayout>
 
 </LinearLayout>

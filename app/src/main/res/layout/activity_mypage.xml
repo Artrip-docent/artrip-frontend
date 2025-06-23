@@ -1,186 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <!-- 1. 프로필 이미지 -->
     <ImageView
-        android:id="@+id/setting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/setting"
-        android:layout_marginLeft="330dp"
-        android:layout_marginTop="5dp" />
+        android:id="@+id/imageViewProfile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_profile"
+        android:background="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
+        android:contentDescription="Profile Image"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- 2. 닉네임 -->
+    <TextView
+        android:id="@+id/textViewNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="예림"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        app:layout_constraintTop_toBottomOf="@id/imageViewProfile"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 3. 액션 아이템 컨테이너 -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/action_container"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:weightSum="3"
+        app:layout_constraintTop_toBottomOf="@id/textViewNickname"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/profile"
-            android:layout_marginTop="50dp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/profile2" />
-
+        <!-- 관람 이력 -->
         <LinearLayout
-            android:id="@+id/main"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/ticket"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:src="@drawable/viewing"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="15dp" />
-
-            <ImageView
-                android:id="@+id/heart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/good"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="70dp" />
-
-            <ImageView
-                android:id="@+id/chat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/chatting"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="80dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                android:contentDescription="Viewing History" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="관람 이력"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:layout_marginLeft="35dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="좋아요 한 작품"
-                android:textStyle="bold"
-                android:layout_marginLeft="65dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="채팅 이력"
-                android:textStyle="bold"
-                android:layout_marginLeft="60dp" />
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:id="@+id/preferenceanalysis"
-            android:layout_width="match_parent"
+        <!-- 좋아요 한 전시 -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="취향 분석 시작하기"
-            android:gravity="center"
-            android:textColor="@color/black">
-        </TextView>
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <TextView
-            android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/heart"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/good"
+                android:contentDescription="Liked Exhibitions" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="좋아요 한 전시"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- 프로필 변경 -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/logout"
-            android:text="로그아웃"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:textColor="#aaaaaa"
-            android:textSize="13dp">
-        </TextView>
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="80dp"
-            android:layout_below="@id/logout"
-            />
+            <ImageView
+                android:id="@+id/profile_edit"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/profile_edit"
+                android:contentDescription="Edit Profile" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="프로필 변경"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 4. 구분선 -->
+    <View
+        android:id="@+id/horizontal_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        app:layout_constraintTop_toBottomOf="@id/action_container"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 5. 취향 분석 시작하기 -->
+    <TextView
+        android:id="@+id/preferenceanalysis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="취향 분석 시작하기"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_divider"
+        android:layout_marginTop="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 6. 로그아웃 -->
+    <TextView
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그아웃"
+        android:textSize="12sp"
+        android:textColor="#888888"
+        app:layout_constraintTop_toBottomOf="@id/preferenceanalysis"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 7. PieChart -->
+
+    <!-- Bottom Navigation Bar (updated to match MyPage) -->
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="0dp"
+        android:layout_height="230dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logout" />
+
+    <FrameLayout
+        android:id="@+id/bottom_nav_bg"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_bar"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/nav_home"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_art"
+            android:contentDescription="Home" />
+
+        <ImageView
+            android:id="@+id/nav_camera"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_camera"
+            android:contentDescription="Camera" />
+
+        <ImageView
+            android:id="@+id/nav_profile"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_user"
+            android:contentDescription="Profile" />
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp">
 
-        <!-- Gray Bar Background -->
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:src="@drawable/frame"
-            android:contentDescription="Bottom navigation background bar" />
-
-        <!-- Icons on top of the Gray Bar -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="4">
-
-            <ImageView
-                android:id="@+id/museum"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:src="@drawable/whiteart"
-                android:contentDescription="Home Icon"
-                android:layout_margin="4dp" />
-
-            <ImageView
-                android:id="@+id/Camera_Button"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:src="@drawable/camera"
-                android:contentDescription="Camera Icon"
-                android:layout_margin="4dp" />
-
-            <ImageView
-                android:id="@+id/Commu_Button"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:src="@drawable/community"
-                android:contentDescription="Chat Icon"
-                android:layout_margin="4dp" />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:src="@drawable/mypage"
-                android:contentDescription="Profile Icon"
-                android:layout_margin="4dp" />
-        </LinearLayout>
-    </FrameLayout>
-
-</RelativeLayout>
-
-
-
-
-
-
+</androidx.constraintlayout.widget.ConstraintLayout>

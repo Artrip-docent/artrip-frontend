@@ -82,4 +82,11 @@ dependencies {
     // 원형 시각화를 위한 MPAndroidChart 설치
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+    
+    implementation ("com.google.android.material:material:1.11.0")
+
 }

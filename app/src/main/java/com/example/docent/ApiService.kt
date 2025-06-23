@@ -10,13 +10,21 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.*
 import com.google.gson.JsonObject
+import okhttp3.RequestBody
 
 interface ApiService {
-    @Multipart
+    @POST("auth/register/")
+    fun registerUser(@Body request: RegisterRequest): Call<RegisterResponse>
 
+    @POST("auth/login/")
+    fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+
+    @Multipart
     @POST("artworks/upload/") // Django 서버의 이미지 업로드 엔드포인트
     fun uploadArtwork(
-        @Part image: MultipartBody.Part
+        @Part image: MultipartBody.Part,
+        @Part("user_id") userId: RequestBody,
+        @Part("exhibition_id") exhibitionId: RequestBody
     ): Call<RetrofitClient.ArtworkResponse>
 
     @Streaming
@@ -31,6 +39,41 @@ interface ApiService {
     fun getRandomArtworks(): Call<List<Artwork>>
 
     @GET("api/exhibition/")
-    fun getExhibitions(): Call<List<Exhibition>>}
+    fun getExhibitions(): Call<List<Exhibition>>
+
+    @GET("api/reviews/reviews/")
+    fun getReviewsByExhibition(@Query("exhibition") exhibitionId: Int): Call<List<Review>>
+
+    @POST("api/reviews/reviews/")
+    fun postReview(@Body reviewRequest: ReviewRequest): Call<Review>
+
+    @Multipart
+    @PATCH("auth/update-profile/")
+    fun updateProfile(
+        @Header("Authorization") token: String,
+        @Part profileImage: MultipartBody.Part?,
+        @Part("nickname") nickname: RequestBody
+    ): Call<ResponseBody>
+
+    @GET("auth/user-info/")
+    fun getUserInfo(
+        @Header("Authorization") token: String
+    ): Call<UserInfoResponse>
+
+    // 좋아요 토글 API
+    @POST("api/exhibition/toggle-like/")
+    fun toggleLike(@Body body: JsonObject): Call<JsonObject>
+
+    @GET("api/exhibition/sorted-user/")
+    fun getSortedExhibitions(@Query("user_id") userId: Int): Call<List<Exhibition>>
+
+    @GET("api/artworks/viewinghistory/{user_id}")
+    fun getViewedExhibitions(@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
+
+    @GET("api/exhibition/search/")
+    fun searchExhibitions(@Query("q") query: String): Call<ExhibitionSearchResponse>
+
+
+}
 
 

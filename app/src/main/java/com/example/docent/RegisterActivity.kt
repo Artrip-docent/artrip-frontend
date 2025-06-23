@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.EditText
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -17,11 +18,12 @@ class RegisterActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-
+        val emailEditText = findViewById<EditText>(R.id.emailInput)
         // 다음 버튼 클릭 시 등록2 화면으로 전환
         val nextButton: Button = findViewById(R.id.next1)
         nextButton.setOnClickListener {
             val intent = Intent(this, Register2Activity::class.java)
+            intent.putExtra("email", emailEditText.text.toString())
             startActivity(intent)
         }
 

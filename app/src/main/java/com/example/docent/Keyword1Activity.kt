@@ -75,7 +75,7 @@ class Keyword1Activity : AppCompatActivity() {
 
                     if (artworks.size >= 4) {
                         for (i in 0 until 4) {
-                            val imageUrl = convertGoogleDriveUrl(artworks[i].image_url)
+                            val imageUrl = (artworks[i].image_url)
                             Glide.with(this@Keyword1Activity)
                                 .load(imageUrl)
                                 .into(imageViews[i])
@@ -107,17 +107,7 @@ class Keyword1Activity : AppCompatActivity() {
         })
     }
 
-    // 🔄 구글 드라이브 URL 변환 함수
-    private fun convertGoogleDriveUrl(originalUrl: String): String {
-        val regex = Regex("id=([a-zA-Z0-9_-]+)")
-        val match = regex.find(originalUrl)
-        val fileId = match?.groupValues?.get(1)
-        return if (fileId != null) {
-            "https://drive.google.com/uc?export=view&id=$fileId"
-        } else {
-            originalUrl // 변환 실패 시 원본 URL 그대로 사용
-        }
-    }
+
 
 
 }

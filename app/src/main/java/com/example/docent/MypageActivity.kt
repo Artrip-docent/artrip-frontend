@@ -7,28 +7,88 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.PercentFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.example.docent.PreferenceRequest
-import com.example.docent.PreferenceResponse
 
+// 프로필 정보 응답 데이터 클래스
+data class UserInfoResponse(
+    val email: String,
+    val nickname: String,
+    val profile_image: String
+)
 
 class MypageActivity : AppCompatActivity() {
+
+    private lateinit var imageViewProfile: ImageView
+    private lateinit var textViewNickname: TextView
+    private lateinit var pieChart: PieChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypage)
 
-        val pieChart: PieChart = findViewById(R.id.pieChart)
+        imageViewProfile = findViewById(R.id.imageViewProfile)
+        textViewNickname = findViewById(R.id.textViewNickname)
+        pieChart = findViewById(R.id.pieChart)
 
+        loadUserProfile()
 
+        setupPieChart()
 
-        // PieChart 기본 설정
+        // 취향 분석 호출
+        requestPreferenceAnalysis()
+
+        // 네비게이션 버튼 설정
+        setupNavigation()
+    }
+
+    private fun loadUserProfile() {
+        val token = getToken()
+        if (token.isEmpty()) {
+            // 토큰 없으면 로그인 화면으로 이동
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+        val authHeader = "Bearer $token"
+
+        RetrofitClient.instance.getUserInfo(authHeader).enqueue(object : Callback<UserInfoResponse> {
+            override fun onResponse(call: Call<UserInfoResponse>, response: Response<UserInfoResponse>) {
+                if (response.isSuccessful) {
+                    val userInfo = response.body()
+                    if (userInfo != null) {
+                        textViewNickname.text = userInfo.nickname
+
+                        Glide.with(this@MypageActivity)
+                            .load(userInfo.profile_image)
+                            .placeholder(R.drawable.ic_profile)
+                            .error(R.drawable.ic_profile)
+                            .into(imageViewProfile)
+                    }
+                } else {
+                    Log.e("Mypage", "프로필 정보 로드 실패: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserInfoResponse>, t: Throwable) {
+                Log.e("Mypage", "프로필 정보 요청 실패: ${t.message}")
+            }
+        })
+    }
+
+    private fun getToken(): String {
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        return prefs.getString("accessToken", "") ?: ""
+    }
+
+    private fun setupPieChart() {
         pieChart.description.isEnabled = false
         pieChart.setUsePercentValues(true)
         pieChart.setEntryLabelTextSize(12f)
@@ -37,16 +97,15 @@ class MypageActivity : AppCompatActivity() {
         pieChart.setCenterTextSize(18f)
         pieChart.legend.isEnabled = false
         pieChart.isDrawHoleEnabled = false
+        pieChart.setNoDataText("")
+        pieChart.setNoDataTextColor(Color.TRANSPARENT)
+    }
 
-        pieChart.setNoDataText("")         // 텍스트 없애기
-        pieChart.setNoDataTextColor(Color.TRANSPARENT) // 색상도 투명하게
-
-
+    private fun requestPreferenceAnalysis() {
         val selectedArtworkIds = intent.getIntegerArrayListExtra("selected_artwork_ids") ?: listOf()
 
-
         val preferenceRequest = PreferenceRequest(
-            user_id = "user_123", // 고정된 ID 또는 로그인 연동 시 유동적으로
+            user_id = "user_123", // 필요 시 실제 유저 ID로 변경
             artwork_ids = selectedArtworkIds
         )
 
@@ -61,34 +120,63 @@ class MypageActivity : AppCompatActivity() {
                         if (result != null) {
                             val entries = mutableListOf<PieEntry>()
                             result.topTags.forEach { tag ->
-                                entries.add(PieEntry(1f, tag))  // 퍼센트 대신 동일 값으로 설정
+                                entries.add(PieEntry(1f, tag))
                             }
-                            // 결과 저장
                             saveTagsToPreferences(result.topTags)
-                            showPieChart(pieChart, entries)
+                            showPieChart(entries)
                         } else {
-                            // 응답은 성공했지만 결과가 비어있을 경우 → 저장된 태그 불러오기
-                            loadAndShowSavedTags(pieChart)
+                            loadAndShowSavedTags()
                         }
-
                     } else {
-                        // 응답은 성공했지만 결과가 비어있을 경우 -> 저장된 태그 불러오기
                         Log.e("Mypage", "서버 응답 오류: ${response.code()}")
-                        loadAndShowSavedTags(pieChart)
+                        loadAndShowSavedTags()
                     }
                 }
 
                 override fun onFailure(call: Call<PreferenceResponse>, t: Throwable) {
                     Log.e("Mypage", "분석 실패: ${t.message}")
-                    // ✅ 서버 연결 실패 시 → 저장된 태그 불러오기
-                    loadAndShowSavedTags(pieChart)
+                    loadAndShowSavedTags()
                 }
             })
+    }
+
+    private fun showPieChart(entries: List<PieEntry>) {
+        val dataSet = PieDataSet(entries, "취향 분석")
+        dataSet.setColors(
+            Color.rgb(179, 205, 224),
+            Color.rgb(251, 180, 174),
+            Color.rgb(204, 235, 197),
+            Color.rgb(222, 203, 228),
+            Color.rgb(254, 217, 166)
+        )
+        val data = PieData(dataSet)
+        data.setDrawValues(false)
+        pieChart.data = data
+        pieChart.invalidate()
 
 
+    }
 
+    private fun saveTagsToPreferences(tags: List<String>) {
+        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
+        prefs.edit().putString("tags", tags.joinToString(",")).apply()
+    }
 
-        //  아래는 기존 네비게이션 코드 유지
+    private fun loadTagsFromPreferences(): List<String> {
+        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
+        val savedString = prefs.getString("tags", "") ?: ""
+        return if (savedString.isNotEmpty()) savedString.split(",") else emptyList()
+    }
+
+    private fun loadAndShowSavedTags() {
+        val savedTags = loadTagsFromPreferences()
+        if (savedTags.isNotEmpty()) {
+            val entries = savedTags.map { PieEntry(1f, it) }
+            showPieChart(entries)
+        }
+    }
+
+    private fun setupNavigation() {
         findViewById<ImageView>(R.id.ticket).setOnClickListener {
             startActivity(Intent(this, exhibitionviewingActivity::class.java))
             finish()
@@ -101,79 +189,27 @@ class MypageActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.logout).setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
 
-        findViewById<ImageView>(R.id.museum).setOnClickListener {
+        findViewById<ImageView>(R.id.nav_home).setOnClickListener {
             startActivity(Intent(this, ArtRecommendationActivity::class.java))
             finish()
         }
 
-        findViewById<ImageView>(R.id.chat).setOnClickListener {
-            startActivity(Intent(this, ChathistoryActivity::class.java))
+        findViewById<ImageView>(R.id.profile_edit).setOnClickListener {
+            startActivity(Intent(this, ProfileEditActivity::class.java))
             finish()
         }
 
-        findViewById<ImageView>(R.id.Camera_Button).setOnClickListener {
-            startActivity(Intent(this, CameraActivity::class.java))
+        findViewById<ImageView>(R.id.nav_camera).setOnClickListener {
+            startActivity(Intent(this, ExhibitionSelectActivity::class.java))
         }
 
-        findViewById<ImageView>(R.id.Commu_Button).setOnClickListener {
-            startActivity(Intent(this, communityActivity::class.java))
-        }
 
-        findViewById<ImageView>(R.id.setting).setOnClickListener {
-            startActivity(Intent(this, SettingActivity::class.java))
-        }
 
         findViewById<TextView>(R.id.preferenceanalysis).setOnClickListener {
             startActivity(Intent(this, PreferenceanalysisActivity::class.java))
         }
     }
-
-    // 🔧 PieChart 출력 함수
-    private fun showPieChart(pieChart: PieChart, entries: List<PieEntry>) {
-        val dataSet = PieDataSet(entries, "취향 분석")
-
-        // ✨ 차분한 톤의 색상으로 표현
-        dataSet.setColors(
-            Color.rgb(179, 205, 224), // 연한 하늘색
-            Color.rgb(251, 180, 174), // 부드러운 연분홍
-            Color.rgb(204, 235, 197), // 연한 민트
-            Color.rgb(222, 203, 228), // 연보라
-            Color.rgb(254, 217, 166)  // 살구색
-        )
-
-        val data = PieData(dataSet)
-        data.setDrawValues(false)
-        pieChart.data = data
-        pieChart.invalidate()
-    }
-
-    // 🔐 저장 함수
-    private fun saveTagsToPreferences(tags: List<String>) {
-        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.putString("tags", tags.joinToString(","))
-        editor.apply()
-    }
-
-    // 📤 불러오기 함수
-    private fun loadTagsFromPreferences(): List<String> {
-        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
-        val savedString = prefs.getString("tags", "") ?: ""
-        return if (savedString.isNotEmpty()) savedString.split(",") else emptyList()
-    }
-
-    // 🎯 저장된 태그 불러와서 원형 그래프에 보여주는 함수
-    private fun loadAndShowSavedTags(pieChart: PieChart) {
-        val savedTags = loadTagsFromPreferences()
-        if (savedTags.isNotEmpty()) {
-            val entries = savedTags.map { PieEntry(1f, it) } // 퍼센트 없이 동일한 값
-            showPieChart(pieChart, entries)
-        }
-    }
-
-
-
-
 }
