@@ -30,7 +30,10 @@ interface ApiService {
 
     @Streaming
     @POST("api/chat/") // SSE 지원하는 단일 API
-    fun sendChatMessage(@Body payload: JsonObject): Call<ResponseBody>
+    fun sendChatMessage(
+        @Header("Authorization") token: String,
+        @Body payload: JsonObject
+    ): Call<ResponseBody>
 
     // 사용자 취향 분석 API
     @POST("artworks/analyze-preference/")

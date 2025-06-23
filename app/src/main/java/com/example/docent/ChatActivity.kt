@@ -105,7 +105,9 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val jsonObject = JsonObject().apply {
             addProperty("message", userMessage)
         }
-        val call = RetrofitClient.instance.sendChatMessage(jsonObject)
+        val token = "Bearer ${getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)}"
+        val call = RetrofitClient.instance.sendChatMessage(token, jsonObject)
+
 
         sseThread = Thread {
             try {
@@ -179,6 +181,12 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         messages.add(ChatMessage("", false))
         val aiMessageIndex = messages.size - 1
         chatAdapter.notifyItemInserted(aiMessageIndex)
+
+        val token = "Bearer ${getSharedPreferences("auth", MODE_PRIVATE).getString("accessToken", null)}"
+        val jsonObject = JsonObject().apply {
+            addProperty("message", message)
+        }
+        val call = RetrofitClient.instance.sendChatMessage(token, jsonObject)
 
         listenToSSE(message, aiMessageIndex)
     }
