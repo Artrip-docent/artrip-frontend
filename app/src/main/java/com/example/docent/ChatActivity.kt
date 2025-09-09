@@ -67,12 +67,11 @@ class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         if (messages.isEmpty()) {
             val initialMessage = """
-            |🎨 작품 정보 🎨
             |제목: $title
             |작가: $artist
             |연도: $year
                 
-            |📝 설명:
+      
             |$description
             """.trimMargin()
 

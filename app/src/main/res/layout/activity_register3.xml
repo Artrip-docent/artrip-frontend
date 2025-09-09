@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="프로필 정보를 입력해주세요."
+        android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/arrow3"
@@ -36,6 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="이름"
+        android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/titleText"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="24dp" />
@@ -46,6 +48,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="이름을 입력하세요"
+        android:textColor="#000000"
+        android:textColorHint="#999999"
         android:textSize="15dp"
         android:background="@null"
         android:padding="0dp"
@@ -68,6 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="성별 (선택)"
+        android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/nameInput"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="24dp" />
@@ -106,8 +111,8 @@
     <!-- Next Button styled same as other screens -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/next3"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
+        android:layout_width="310dp"
+        android:layout_height="55dp"
         android:text="다음"
         android:textStyle="bold"
         android:textSize="13sp"

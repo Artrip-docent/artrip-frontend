@@ -12,14 +12,21 @@ import java.util.*
 
 
 fun String.toDisplayDate(): String {
-    return try {
-        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
-        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        val date = parser.parse(this)
-        date?.let { formatter.format(it) } ?: this
-    } catch (e: Exception) {
-        this
+    val out = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
+    val candidates = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
+    ).map { java.text.SimpleDateFormat(it, java.util.Locale.US) }
+
+    // 마이크로초(6자리 이상) 들어오면 3자리(ms)까지만 남기기
+    val trimmed = replace(Regex("\\.(\\d{3})\\d+(?=[Z+\\-])"), ".$1")
+    for (p in candidates) {
+        try {
+            val d = p.parse(trimmed)
+            if (d != null) return out.format(d)
+        } catch (_: Exception) {}
     }
+    return this // 실패하면 원문 그대로
 }
 
 // RecyclerView Adapter 클래스

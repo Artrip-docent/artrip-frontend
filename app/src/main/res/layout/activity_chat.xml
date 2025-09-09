@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="채팅 이력"
-        android:textSize="18sp"
+        android:textSize="15sp"
+        android:textColor="#000000"
         android:textStyle="bold"
         android:gravity="center"
         android:padding="12dp"
@@ -53,20 +54,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="메시지를 입력하세요"
+            android:textSize="14sp"
+            android:textColorHint="#999999"
+            android:textColor="#000000"
             android:background="@android:drawable/edit_text"
             android:padding="8dp" />
 
         <!-- 둥근 전송 버튼 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_text_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="58dp"
             android:layout_height="50dp"
             android:layout_marginStart="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:text="전송"
-            android:textColor="@android:color/white"
             android:backgroundTint="#000000"
+            android:paddingLeft="13dp"
+            android:paddingRight="13dp"
+            android:text="전송"
+            android:textSize="12dp"
+            android:textColor="@android:color/white"
             app:cornerRadius="20dp"
             app:iconGravity="textStart" />
 

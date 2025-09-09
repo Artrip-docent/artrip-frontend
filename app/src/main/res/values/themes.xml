@@ -8,6 +8,9 @@
         <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="android:fontFamily">@font/pyeojin_gothic</item>
+        <item name="colorControlActivated">#000000</item>
+        <item name="colorControlNormal">#000000</item>
+        <item name="colorControlHighlight">#000000</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
