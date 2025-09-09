@@ -66,6 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="관람 이력"
+                android:textColor="#000000"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp" />
@@ -90,6 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="좋아요 한 전시"
+                android:textColor="#000000"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp" />
@@ -114,6 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="프로필 변경"
+                android:textColor="#000000"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp" />
@@ -137,6 +140,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="취향 분석 시작하기"
+        android:textColor="#000000"
         android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@id/horizontal_divider"
         android:layout_marginTop="25dp"
@@ -150,25 +154,69 @@
         android:layout_height="wrap_content"
         android:text="로그아웃"
         android:textSize="12sp"
-        android:textColor="#888888"
+        android:textColor="#999999"
         app:layout_constraintTop_toBottomOf="@id/preferenceanalysis"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 7. PieChart -->
-
-    <!-- Bottom Navigation Bar (updated to match MyPage) -->
-
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
-        android:layout_width="0dp"
-        android:layout_height="230dp"
-        android:layout_marginTop="45dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+    <!-- 요약 문구: "○○ 사조를 선호하시네요" -->
+    <TextView
+        android:id="@+id/tvMovementSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:textColor="#000000"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/logout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logout" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 사조 도넛 차트 (id 통일) -->
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChartMovement"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="25dp"
+        app:layout_constraintTop_toBottomOf="@id/tvMovementSummary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/legendContainer"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+
+    <!-- (신규) 범례 컨테이너: 차트의 오른쪽 가장자리에 겹치게 배치 -->
+    <LinearLayout
+        android:id="@+id/legendContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="2dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="12dp"
+        android:gravity="top|start"
+        app:layout_constraintStart_toEndOf="@id/pieChartMovement"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pieChartMovement"
+        app:layout_constraintBottom_toBottomOf="@id/pieChartMovement"
+        app:layout_constraintVertical_bias="0.5"/>
+
+    <!-- 분위기 태그 클라우드 -->
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/moodCloud"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="12dp"
+        app:flexWrap="wrap"
+        app:justifyContent="center"
+        app:alignItems="flex_start"
+        app:alignContent="flex_start"
+        app:layout_constraintTop_toBottomOf="@id/pieChartMovement"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <FrameLayout
         android:id="@+id/bottom_nav_bg"

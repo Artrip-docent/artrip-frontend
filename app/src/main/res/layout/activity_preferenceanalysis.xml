@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="취향분석을 통해"
-        android:textSize="30dp"
+        android:textColor="#000000"
+        android:textSize="25dp"
         android:textStyle="bold"
         android:layout_marginTop="50dp"
         android:gravity="center" />
@@ -19,16 +20,18 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="나에게 딱 맞는"
-        android:textSize="28dp"
+        android:text="내가 선호하는"
+        android:textColor="#000000"
+        android:textSize="25dp"
         android:textStyle="bold"
         android:layout_marginLeft="130dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="전시 작품을"
-        android:textSize="28dp"
+        android:text="작품 취향을"
+        android:textColor="#000000"
+        android:textSize="25dp"
         android:textStyle="bold"
         android:layout_marginLeft="140dp" />
 
@@ -36,15 +39,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="알아보세요!"
-        android:textSize="28dp"
+        android:textColor="#000000"
+        android:textSize="25dp"
         android:textStyle="bold"
         android:layout_marginLeft="145dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/next4"
         android:layout_gravity="center"
-        android:layout_width="330dp"
-        android:layout_height="60dp"
+        android:layout_width="310dp"
+        android:layout_height="55dp"
         android:text="취향분석 시작"
         android:textColor="#FFFFFF"
         android:textStyle="bold"

@@ -27,6 +27,9 @@ class PreferenceanalysisActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+        findViewById<TextView>(R.id.no).setOnClickListener {
+            startActivity(Intent(this, MypageActivity::class.java))
+        }
 
 
 

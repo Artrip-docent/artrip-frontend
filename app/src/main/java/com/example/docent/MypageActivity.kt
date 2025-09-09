@@ -2,8 +2,14 @@ package com.example.docent
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Log
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +18,14 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.google.android.flexbox.FlexboxLayout
+import android.view.View
+import android.widget.LinearLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import org.json.JSONArray
+import org.json.JSONObject
 
 data class UserInfoResponse(
     val email: String,
@@ -26,18 +37,27 @@ class MypageActivity : AppCompatActivity() {
 
     private lateinit var imageViewProfile: ImageView
     private lateinit var textViewNickname: TextView
-    private lateinit var pieChart: PieChart
+    private lateinit var tvMovementSummary: TextView
+    private lateinit var pieChartMovement: PieChart
+    private lateinit var moodCloud: FlexboxLayout
+    private lateinit var legendContainer: LinearLayout
+    // 개수 조절 상수
+    private val TOP_MOVEMENTS = 2   // 사조 2개
+    private val TOP_MOODS = 4      // 분위기 4개
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypage)
 
-        imageViewProfile = findViewById(R.id.imageViewProfile)
-        textViewNickname = findViewById(R.id.textViewNickname)
-        pieChart = findViewById(R.id.pieChart)
+        imageViewProfile   = findViewById(R.id.imageViewProfile)
+        textViewNickname   = findViewById(R.id.textViewNickname)
+        tvMovementSummary  = findViewById(R.id.tvMovementSummary)
+        pieChartMovement   = findViewById(R.id.pieChartMovement)
+        moodCloud          = findViewById(R.id.moodCloud)
+        legendContainer   = findViewById(R.id.legendContainer)
 
+        setupMovementChart()   // 도넛 차트 공통 스타일
         loadUserProfile()
-        setupPieChart()
         requestPreferenceAnalysis()
         setupNavigation()
     }
@@ -87,105 +107,241 @@ class MypageActivity : AppCompatActivity() {
             })
     }
 
-    private fun setupPieChart() {
-        pieChart.description.isEnabled = false
-        pieChart.setUsePercentValues(true)
-        pieChart.setEntryLabelTextSize(12f)
-        pieChart.setEntryLabelColor(Color.BLACK)
-        pieChart.setCenterText("")
-        pieChart.setCenterTextSize(18f)
-        pieChart.legend.isEnabled = false
-        pieChart.isDrawHoleEnabled = false
-        pieChart.setNoDataText("")
-        pieChart.setNoDataTextColor(Color.TRANSPARENT)
+    /** 도넛 차트 공통 스타일 */
+    private fun setupMovementChart() {
+        pieChartMovement.description.isEnabled = false
+        pieChartMovement.setUsePercentValues(true)
+        pieChartMovement.setEntryLabelColor(Color.BLACK)
+        pieChartMovement.setEntryLabelTextSize(11f)
+
+        // 도넛
+        pieChartMovement.isDrawHoleEnabled = true
+        pieChartMovement.holeRadius = 58f
+        pieChartMovement.transparentCircleRadius = 62f
+        pieChartMovement.setCenterText("")
+        // 조각 위 텍스트는 안 보이게
+        pieChartMovement.setDrawEntryLabels(false)
+        // 기본 범례는 사용 안 함 (우리는 오른쪽에 별도 컨테이너 사용)
+        pieChartMovement.legend.isEnabled = false
+        // 좌우 여백을 동일하게(가운데 시각 정렬에 도움)
+        pieChartMovement.setExtraOffsets(8f, 8f, 8f, 8f)
+
+
     }
 
     private fun requestPreferenceAnalysis() {
         val token = getToken()
         val userId = getUserId()
-
-        if (token.isEmpty() || userId == -1) {
-            Log.e("Mypage", "토큰이나 사용자 ID가 없습니다.")
-            return
-        }
+        if (token.isEmpty() || userId == -1) { /* 생략 */ return }
 
         val authHeader = "Bearer $token"
-
-        // 저장된 사용자 선택 작품 id를 가져와서 요청에 넣거나, 빈 리스트 전달 가능
-        val selectedArtworkIds = intent.getIntegerArrayListExtra("selected_artwork_ids") ?: listOf()
-
-        val preferenceRequest = PreferenceRequest(
-            user_id = userId.toString(),  // 실제 유저 아이디로
-            artwork_ids = selectedArtworkIds
-        )
+        val selectedArtworkIds = intent.getIntegerArrayListExtra("selected_artwork_ids") ?: emptyList<Int>()
+        val preferenceRequest = PreferenceRequest(user_id = userId.toString(), artwork_ids = selectedArtworkIds)
 
         RetrofitClient.instance.analyzePreference(authHeader, preferenceRequest)
             .enqueue(object : Callback<PreferenceResponse> {
-                override fun onResponse(call: Call<PreferenceResponse>, response: Response<PreferenceResponse>) {
-                    if (response.isSuccessful) {
-                        val result = response.body()
-                        if (result != null) {
-                            val entries = mutableListOf<PieEntry>()
-                            result.topTags.forEach { tag ->
-                                entries.add(PieEntry(1f, tag))
-                            }
-                            saveTagsToPreferences(result.topTags)
-                            showPieChart(entries)
-                        } else {
-                            loadAndShowSavedTags()
-                        }
-                    } else {
-                        Log.e("Mypage", "취향 분석 서버 오류 코드: ${response.code()}")
-                        loadAndShowSavedTags()
-                    }
+                override fun onResponse(call: Call<PreferenceResponse>, res: Response<PreferenceResponse>) {
+                    if (res.isSuccessful) {
+                        val body = res.body()
+                        if (body != null) {
+                            val movementPairs = (body.movements ?: emptyList()).map { it.name to it.count }
+                            val moodPairs     = (body.moods ?: emptyList()).map { it.name to it.count }
+                            // 새 포맷(카운트)으로 저장
+                            savePreferenceCounts(movementPairs, moodPairs)
+                            // 화면 그리기
+                            renderPreferenceUIFromCounts(
+                                topMovement = body.top_movement,
+                                movementCounts = movementPairs,
+                                moodCounts = moodPairs
+                            )
+                        } else loadAndShowSavedTags()
+                    } else { loadAndShowSavedTags() }
                 }
-
                 override fun onFailure(call: Call<PreferenceResponse>, t: Throwable) {
-                    Log.e("Mypage", "취향 분석 실패: ${t.message}")
                     loadAndShowSavedTags()
                 }
             })
     }
 
-    private fun showPieChart(entries: List<PieEntry>) {
-        val dataSet = PieDataSet(entries, "취향 분석")
-        dataSet.setColors(
-            Color.rgb(179, 205, 224),
-            Color.rgb(251, 180, 174),
-            Color.rgb(204, 235, 197),
-            Color.rgb(222, 203, 228),
-            Color.rgb(254, 217, 166)
-        )
-        val data = PieData(dataSet)
-        data.setDrawValues(false)
-        pieChart.data = data
-        pieChart.invalidate()
+    private fun renderPreferenceUIFromCounts(
+        topMovement: String?,
+        movementCounts: List<Pair<String, Int>>,
+        moodCounts: List<Pair<String, Int>>
+    ) {
+        // 상단 문구
+        if (topMovement.isNullOrBlank()) {
+            tvMovementSummary.text = "취향 분석을 시작해보세요"
+            pieChartMovement.clear()
+        } else {
+            val text = "$topMovement 사조를 선호하시네요!"
+            val span = SpannableString(text).apply {
+                val accent = Color.parseColor("#6A2CF2")
+                setSpan(ForegroundColorSpan(accent), 0, topMovement.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(StyleSpan(Typeface.BOLD), 0, topMovement.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            tvMovementSummary.text = span
+            // 도넛은 **받은 모든 사조**로 그림(Top N 제한 없음)
+            drawMovementPieFromCounts(movementCounts)
+        }
+
+        // 분위기 텍스트(클라우드)
+        drawMoodCloudFromCounts(moodCounts)
     }
 
-    private fun saveTagsToPreferences(tags: List<String>) {
-        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
-        prefs.edit().putString("tags", tags.joinToString(",")).apply()
+    private fun drawMovementPieFromCounts(items: List<Pair<String, Int>>) {
+        if (items.isEmpty()) { pieChartMovement.clear(); legendContainer.removeAllViews(); return }
+
+        val top = items.sortedByDescending { it.second }.take(TOP_MOVEMENTS)
+        val total = top.sumOf { it.second }.toFloat()
+        val entries = top.map { (label, cnt) -> PieEntry((cnt / total) * 100f, label) }
+
+        val colors = listOf(
+            Color.parseColor("#6A2CF2"),
+            Color.parseColor("#B388FF"),
+            Color.parseColor("#8FD3FE"),
+            Color.parseColor("#FFB3B3"),
+            Color.parseColor("#C6E48B"),
+            Color.parseColor("#FFD166"),
+            Color.parseColor("#06D6A0")
+        ).take(entries.size)
+
+        val dataSet = PieDataSet(entries, "").apply {
+            this.colors = colors
+            sliceSpace = 2f
+            setDrawValues(false)   // 조각 위 숫자 숨김(범례만 표시)
+        }
+
+        pieChartMovement.data = PieData(dataSet)
+        pieChartMovement.invalidate()
+
+        // 오른쪽 커스텀 범례(라벨 전부 표시)
+        buildLegend(top.map { it.first }, colors)
     }
 
-    private fun loadTagsFromPreferences(): List<String> {
-        val prefs = getSharedPreferences("preference_tags", MODE_PRIVATE)
-        val savedString = prefs.getString("tags", "") ?: ""
-        return if (savedString.isNotEmpty()) savedString.split(",") else emptyList()
-    }
+    private fun drawMoodCloudFromCounts(countsList: List<Pair<String, Int>>) {
+        moodCloud.removeAllViews()
+        if (countsList.isEmpty()) return
 
-    private fun loadAndShowSavedTags() {
-        val savedTags = loadTagsFromPreferences()
-        if (savedTags.isNotEmpty()) {
-            val entries = savedTags.map { PieEntry(1f, it) }
-            showPieChart(entries)
+        val maxCnt = countsList.maxOf { it.second }.toFloat()
+        val base = 11f
+        val maxSize = 16f
+        val rnd = java.util.Random()
+
+        countsList.sortedByDescending { it.second }.take(TOP_MOODS).forEach { (word, cnt) ->
+            val tv = TextView(this).apply {
+                text = word
+                val weight = if (maxCnt == 0f) 0f else cnt / maxCnt
+                textSize = base + (maxSize - base) * weight
+                setTextColor(Color.parseColor("#7E57C2"))
+                alpha = 0.85f - rnd.nextFloat() * 0.2f
+                setPadding(6, 4, 6, 4)
+            }
+            val lp = ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                rightMargin = 8
+                bottomMargin = 6
+            }
+            moodCloud.addView(tv, lp)
         }
     }
+
+
+    private fun buildLegend(labels: List<String>, colors: List<Int>) {
+        legendContainer.removeAllViews()
+        val dp = resources.displayMetrics.density
+        labels.forEachIndexed { idx, label ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, (4 * dp).toInt(), 0, (4 * dp).toInt())  // 위아래 여백 축소
+            }
+
+            // 컬러 사각형(작게)
+            val swatch = View(this).apply {
+                setBackgroundColor(colors[idx])
+                val size = (10 * dp).toInt()                          // 10dp
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    rightMargin = (6 * dp).toInt()
+                }
+            }
+
+            // 라벨(작게)
+            val tv = TextView(this).apply {
+                text = label
+                textSize = 11f                                       // 11sp
+                setTextColor(Color.BLACK)
+            }
+
+            row.addView(swatch)
+            row.addView(tv)
+            legendContainer.addView(row)
+        }
+    }
+
+
+    private fun loadAndShowSavedTags() {
+        val (movements, moods) = loadPreferenceCounts()
+        if (movements.isEmpty() && moods.isEmpty()) return
+
+        val topMovement = movements.maxByOrNull { it.second }?.first
+        renderPreferenceUIFromCounts(
+            topMovement = topMovement,
+            movementCounts = movements,
+            moodCounts = moods
+        )
+    }
+
+    private fun savePreferenceCounts(
+        movements: List<Pair<String, Int>>,
+        moods: List<Pair<String, Int>>
+    ) {
+        val prefs = getSharedPreferences("mypage_prefs", MODE_PRIVATE)
+
+        fun List<Pair<String, Int>>.toJsonArray(): JSONArray =
+            JSONArray().apply {
+                for ((name, count) in this@toJsonArray) {
+                    put(JSONObject().apply {
+                        put("name", name)
+                        put("count", count)
+                    })
+                }
+            }
+
+        val root = JSONObject().apply {
+            put("movements", movements.toJsonArray())
+            put("moods", moods.toJsonArray())
+        }
+        prefs.edit().putString("pref_counts_json", root.toString()).apply()
+    }
+
+    private fun loadPreferenceCounts(): Pair<List<Pair<String, Int>>, List<Pair<String, Int>>> {
+        val prefs = getSharedPreferences("mypage_prefs", MODE_PRIVATE)
+        val raw = prefs.getString("pref_counts_json", null) ?: return emptyList<Pair<String, Int>>() to emptyList()
+
+        val root = JSONObject(raw)
+
+        fun parse(arr: JSONArray): List<Pair<String, Int>> {
+            val out = ArrayList<Pair<String, Int>>()
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                out += o.getString("name") to o.getInt("count")
+            }
+            return out
+        }
+
+        val movements = parse(root.optJSONArray("movements") ?: JSONArray())
+        val moods     = parse(root.optJSONArray("moods") ?: JSONArray())
+        return movements to moods
+    }
+
 
     private fun setupNavigation() {
         findViewById<ImageView>(R.id.ticket).setOnClickListener {
             startActivity(Intent(this, exhibitionviewingActivity::class.java))
             finish()
         }
+
 
         findViewById<ImageView>(R.id.heart).setOnClickListener {
             startActivity(Intent(this, GoodexhibitionActivity::class.java))

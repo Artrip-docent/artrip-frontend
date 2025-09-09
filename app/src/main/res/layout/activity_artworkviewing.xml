@@ -11,8 +11,11 @@
         android:id="@+id/headerText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
         android:text="감상한 작품 목록"
-        android:textSize="18sp"
+        android:textColor="#000000"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:paddingBottom="8dp" />
 

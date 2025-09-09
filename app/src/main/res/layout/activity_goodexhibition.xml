@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="좋아요 한 전시"
+        android:textColor="#000000"
         android:textSize="15sp"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
