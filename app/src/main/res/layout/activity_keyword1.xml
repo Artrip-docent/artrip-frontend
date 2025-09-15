@@ -8,16 +8,62 @@
     android:gravity="center_horizontal"
     android:padding="24dp">
 
-    <!-- 안내 텍스트 -->
+    <!-- 페이지 인디케이터 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp">
+
+        <ImageButton
+            android:id="@+id/prev"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="이전 페이지"
+            android:padding="0dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_chevron_left_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="관심 있는 작품을 골라주세요."
+            android:textColor="#000000"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.457" />
+
+        <ImageButton
+            android:id="@+id/next6"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="다음/완료"
+            android:padding="0dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_chevron_right_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvPageIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="관심 있는 그림을 골라주세요."
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp" />
+        android:text="1 / 3"
+        android:textColor="#999999"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp" />
+
+
 
     <!-- 이미지 4개를 담을 컨테이너 -->
     <LinearLayout
@@ -78,21 +124,9 @@
                 android:scaleType="centerCrop"
                 android:background="#CCCCCC" />
         </LinearLayout>
+
     </LinearLayout>
 
-    <!-- 다음 버튼 (풀-폭, 둥근 모서리) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/next6"
-        android:layout_width="310dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="다음"
-        android:textSize="13sp"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2C2C2C"
-        app:cornerRadius="28dp"
-        app:iconGravity="textStart" />
+
 
 </LinearLayout>

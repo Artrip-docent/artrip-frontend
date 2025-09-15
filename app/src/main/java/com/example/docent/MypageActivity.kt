@@ -58,6 +58,7 @@ class MypageActivity : AppCompatActivity() {
 
         setupMovementChart()   // 도넛 차트 공통 스타일
         loadUserProfile()
+        loadAndShowSavedTags()  // SWR: 캐시 먼저 그려두고, 이어서 네트워크로 최신값 갱신
         requestPreferenceAnalysis()
         setupNavigation()
     }
@@ -168,20 +169,26 @@ class MypageActivity : AppCompatActivity() {
         movementCounts: List<Pair<String, Int>>,
         moodCounts: List<Pair<String, Int>>
     ) {
+        // 도넛에 실제로 사용할 Top2를 먼저 계산하여 문구와 시각화의 정합성 보장
+        val top2 = movementCounts.sortedByDescending { it.second }.take(TOP_MOVEMENTS)
+
+        // 최다 사조(문구용): 서버 제공값이 있으면 사용, 없으면 top2의 1등으로 보정
+        val pick = if (!topMovement.isNullOrBlank()) topMovement else top2.firstOrNull()?.first
+
         // 상단 문구
-        if (topMovement.isNullOrBlank()) {
+        if (pick.isNullOrBlank()) {
             tvMovementSummary.text = "취향 분석을 시작해보세요"
             pieChartMovement.clear()
         } else {
-            val text = "$topMovement 사조를 선호하시네요!"
+            val text = "$topMovement 스타일을 선호하시네요!"
             val span = SpannableString(text).apply {
                 val accent = Color.parseColor("#6A2CF2")
-                setSpan(ForegroundColorSpan(accent), 0, topMovement.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                setSpan(StyleSpan(Typeface.BOLD), 0, topMovement.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(ForegroundColorSpan(accent), 0, pick.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(StyleSpan(Typeface.BOLD), 0, pick.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             tvMovementSummary.text = span
-            // 도넛은 **받은 모든 사조**로 그림(Top N 제한 없음)
-            drawMovementPieFromCounts(movementCounts)
+            // 도넛은 상위 2개 사조만 반영
+            drawMovementPieFromCounts(top2)
         }
 
         // 분위기 텍스트(클라우드)
@@ -278,6 +285,7 @@ class MypageActivity : AppCompatActivity() {
             legendContainer.addView(row)
         }
     }
+
 
 
     private fun loadAndShowSavedTags() {

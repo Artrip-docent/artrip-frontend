@@ -1,54 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="10dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start">
+    android:padding="10dp"
+    android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/reviewAuthorName"
-        android:layout_width="wrap_content"
+    <!-- 기존 내용 래핑 -->
+    <LinearLayout
+        android:id="@+id/reviewContentBox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:layout_marginLeft="5dp"
-        android:text="작성자"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:gravity="start"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/reviewContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:textSize="12sp"
-        android:text="내용" />
+        <TextView
+            android:id="@+id/reviewAuthorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:layout_marginLeft="5dp"
+            android:text="작성자"
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
+        <RatingBar
+            android:id="@+id/reviewRating"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_gravity="start"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:layout_marginTop="5dp"
+            android:progressBackgroundTint="#CCCCCC"
+            android:progressTint="#000000"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:transformPivotX="0dp" />
 
-    <RatingBar
-        android:id="@+id/reviewRating"
-        android:layout_width="wrap_content"
-        android:layout_height="43dp"
-        android:layout_gravity="start"
-        android:layout_marginTop="10dp"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:progressBackgroundTint="#CCCCCC"
-        android:progressTint="#FFD700"
-        android:scaleX="0.7"
-        android:scaleY="0.7"
-        android:secondaryProgressTint="#FFD700"
-        android:transformPivotX="0dp" />
+        <TextView
+            android:id="@+id/reviewContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="내용"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/reviewDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="날짜"
-        android:layout_marginLeft="5dp"
-        android:textSize="12sp"
-        android:textColor="#999999" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/reviewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="날짜"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:textSize="12sp"
+            android:textColor="#999999" />
+    </LinearLayout>
+
+    <!-- 오른쪽 상단 X 버튼 -->
+    <ImageView
+        android:id="@+id/btnDelete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="4dp"
+        android:src="@drawable/ic_close_24"
+        android:contentDescription="리뷰 삭제"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
