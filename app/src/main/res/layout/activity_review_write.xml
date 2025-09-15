@@ -23,29 +23,29 @@
         android:scaleY="0.7"
         android:isIndicator="false"
         android:layout_gravity="center_horizontal"
-        android:progressTint="#FFD700"
-        android:secondaryProgressTint="#FFD700"
+        android:progressTint="#000000"
+        android:secondaryProgressTint="#000000"
         android:progressBackgroundTint="#CCCCCC"/>
     <!-- 리뷰 내용 입력 -->
     <EditText
         android:id="@+id/reviewEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:layout_marginTop="30dp"
-        android:minHeight="100dp"
         android:gravity="top"
         android:hint="리뷰 내용을 입력하세요"
-        android:textSize="13sp"
-        android:textColorHint="#999999"
+        android:inputType="textMultiLine"
+        android:minHeight="100dp"
         android:textColor="#000000"
-        android:inputType="textMultiLine" />
+        android:textColorHint="#999999"
+        android:textSize="13sp" />
 
     <!-- 리뷰 등록 버튼 (검은색, 둥글게) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/submitReviewButton"
         android:layout_width="310dp"
         android:layout_height="55dp"
-        android:layout_marginTop="360dp"
+        android:layout_marginTop="430dp"
         android:layout_gravity="center"
         android:text="리뷰 등록"
         android:textStyle="bold"

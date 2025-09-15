@@ -78,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
 
                                 // 분기 처리: 첫 로그인 여부에 따라 이동
                                 val intent = if (loginResponse.is_first_login) {
-                                    Intent(this@LoginActivity, Keyword1Activity::class.java)
+                                    Intent(this@LoginActivity, PreferenceanalysisActivity::class.java)
                                 } else {
                                     Intent(this@LoginActivity, ArtRecommendationActivity::class.java)
                                 }

@@ -87,7 +87,7 @@ interface ApiService {
     fun getViewedExhibitions(@Header("Authorization") token: String,@Path("user_id") userId: Int): Call<List<ViewedExhibition>>
 
     @GET("api/exhibition/search/")
-    fun searchExhibitions(@Query("q") query: String): Call<ExhibitionSearchResponse>
+    fun searchExhibitions(@Query("q") query: String): Call<List<Exhibition>>
 
     @GET("api/artworks/viewinghistory/{user_id}/{exhibition_id}/")
     fun getViewedArtworks(
@@ -103,6 +103,12 @@ interface ApiService {
         @Query("artwork_id") artworkId: Int,
         @Query("exhibition_id") exhibitionId: Int
     ): Call<List<ChatHistoryItem>>
-}
 
+    // 리뷰 삭제 API
+    @DELETE("api/reviews/reviews/{id}/")
+    fun deleteReview(
+        @Header("Authorization") token: String,
+        @Path("id") reviewId: Int
+    ): Call<ResponseBody>
+}
 

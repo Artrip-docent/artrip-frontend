@@ -3,6 +3,7 @@ package com.example.docent
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -55,14 +56,15 @@ class ArtRecommendationActivity : AppCompatActivity() {
         }
 
         userId = getSharedPreferences("auth", MODE_PRIVATE).getInt("user_id", -1)
-
         if (userId == -1) {
             Log.e("User", "유저 ID가 유효하지 않음")
             return
         }
 
+        // 최초 로딩: 좋아요 우선 + 진행중→예정→지난
         fetchAllExhibitions()
 
+        // 검색 버튼
         searchBtn.setOnClickListener {
             val query = searchInput.text.toString().trim()
             if (query.isNotEmpty()) {
@@ -70,6 +72,18 @@ class ArtRecommendationActivity : AppCompatActivity() {
             }
         }
 
+        // 키보드 검색 액션 처리(엔터)
+        searchInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = searchInput.text.toString().trim()
+                if (query.isNotEmpty()) searchExhibitions(query)
+                true
+            } else {
+                false
+            }
+        }
+
+        // 취소 버튼: 검색어 비우고 전체 목록
         cancelBtn.setOnClickListener {
             searchInput.setText("")
             fetchAllExhibitions()
@@ -77,76 +91,69 @@ class ArtRecommendationActivity : AppCompatActivity() {
     }
 
     private fun fetchAllExhibitions() {
-        RetrofitClient.instance.getSortedExhibitions(userId).enqueue(object : Callback<List<Exhibition>> {
-            override fun onResponse(call: Call<List<Exhibition>>, response: Response<List<Exhibition>>) {
-                if (response.isSuccessful) {
-                    val exhibitions = response.body() ?: emptyList()
-                    exhibitionAdapter = ExhibitionAdapter(
-                        exhibitions,
-                        { exhibition ->
-                            val intent = Intent(this@ArtRecommendationActivity, ReviewActivity::class.java)
-                            intent.putExtra("EXHIBITION_ID", exhibition.id)
-                            startActivity(intent)
-                        },
-                        userId
-                    )
-                    recyclerView.adapter = exhibitionAdapter
-                } else {
-                    Log.e("API", "응답 실패: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<Exhibition>>, t: Throwable) {
-                Log.e("API", "연결 실패: ${t.message}")
-            }
-        })
-    }
-
-    private fun searchExhibitions(query: String) {
-        RetrofitClient.instance.searchExhibitions(query)
-            .enqueue(object : Callback<ExhibitionSearchResponse> {
+        RetrofitClient.instance.getSortedExhibitions(userId)
+            .enqueue(object : Callback<List<Exhibition>> {
                 override fun onResponse(
-                    call: Call<ExhibitionSearchResponse>,
-                    response: Response<ExhibitionSearchResponse>
+                    call: Call<List<Exhibition>>,
+                    response: Response<List<Exhibition>>
                 ) {
-                    val exhibitions = response.body()?.results?.map {
-                        Exhibition(
-                            id = it.id,
-                            title = it.title,
-                            period = "${it.start_date} ~ ${it.end_date}",
-                            location = it.location,
-                            imageUrl = it.image_url
+                    if (response.isSuccessful) {
+                        val exhibitions = response.body().orEmpty()
+                        exhibitionAdapter = ExhibitionAdapter(
+                            exhibitions,
+                            { exhibition ->
+                                val intent = Intent(
+                                    this@ArtRecommendationActivity,
+                                    ReviewActivity::class.java
+                                )
+                                intent.putExtra("EXHIBITION_ID", exhibition.id)
+                                startActivity(intent)
+                            },
+                            userId
                         )
-                    } ?: emptyList()
-
-                    exhibitionAdapter = ExhibitionAdapter(
-                        exhibitions,
-                        { exhibition ->
-                            val intent =
-                                Intent(this@ArtRecommendationActivity, ReviewActivity::class.java)
-                            intent.putExtra("EXHIBITION_ID", exhibition.id)
-                            startActivity(intent)
-                        },
-                        userId
-                    )
-                    recyclerView.adapter = exhibitionAdapter
+                        recyclerView.adapter = exhibitionAdapter
+                    } else {
+                        Log.e("API", "응답 실패: code=${response.code()} body=${response.errorBody()?.string()}")
+                    }
                 }
 
-                override fun onFailure(call: Call<ExhibitionSearchResponse>, t: Throwable) {
-                    Log.e("Search", "검색 실패: ${t.message}")
+                override fun onFailure(call: Call<List<Exhibition>>, t: Throwable) {
+                    Log.e("API", "연결 실패: ${t.message}", t)
                 }
             })
+    }
 
+    // 검색: 서버가 배열(JSON array)로 응답 → 바로 List<Exhibition>로 받기
+    private fun searchExhibitions(query: String) {
+        RetrofitClient.instance.searchExhibitions(query)
+            .enqueue(object : Callback<List<Exhibition>> {
+                override fun onResponse(
+                    call: Call<List<Exhibition>>,
+                    response: Response<List<Exhibition>>
+                ) {
+                    if (response.isSuccessful) {
+                        val exhibitions = response.body().orEmpty()
+                        exhibitionAdapter = ExhibitionAdapter(
+                            exhibitions,
+                            { exhibition ->
+                                val intent = Intent(
+                                    this@ArtRecommendationActivity,
+                                    ReviewActivity::class.java
+                                )
+                                intent.putExtra("EXHIBITION_ID", exhibition.id)
+                                startActivity(intent)
+                            },
+                            userId
+                        )
+                        recyclerView.adapter = exhibitionAdapter
+                    } else {
+                        Log.e("Search", "검색 실패: code=${response.code()} body=${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Exhibition>>, t: Throwable) {
+                    Log.e("Search", "검색 실패: ${t.message}", t)
+                }
+            })
     }
 }
-
-
-
-
-
-
-
-
-
-
-
