@@ -180,7 +180,7 @@ class MypageActivity : AppCompatActivity() {
             tvMovementSummary.text = "취향 분석을 시작해보세요"
             pieChartMovement.clear()
         } else {
-            val text = "$topMovement 스타일을 선호하시네요!"
+            val text = "$pick 스타일을 선호하시네요!"
             val span = SpannableString(text).apply {
                 val accent = Color.parseColor("#6A2CF2")
                 setSpan(ForegroundColorSpan(accent), 0, pick.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
