@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
 }
 
 android {
@@ -75,7 +76,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -89,5 +90,12 @@ dependencies {
 
     
     implementation ("com.google.android.material:material:1.11.0")
+
+    // Glide ↔ OkHttp 통합 (동일 메이저/마이너에 맞추기)
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.15.1")
+
+    // OkHttp + 로깅
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 }
